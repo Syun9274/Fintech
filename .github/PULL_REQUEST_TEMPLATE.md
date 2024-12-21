@@ -1,0 +1,24 @@
+---
+name: Pull Request Template
+about: Describe this pull request template's purpose here.
+title: ''
+labels: ''
+assignees: ''
+---
+
+## 변경사항
+[//]: # (이 PR에서 어떤점들이 변경되었는지 기술해주세요. 가급적이면 as-is, to-be를 활용해서 작성해주세요.)
+
+[//]: # (현재 구현되어 있는 사항, 현재의 문제점 또는 한계, 변경 전의 기능이나 로직 설명)
+### AS-IS
+
+[//]: # (개선되거나 변경된 상태, 기대하는 결과, 새로운 기능 설명)
+### TO-BE
+
+---
+
+## 테스트
+[//]: # (본 변경사항이 테스트가 되었는지 기술해주세요)
+
+- [ ] 테스트 코드
+- [ ] API 테스트 
