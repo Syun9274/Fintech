@@ -28,6 +28,7 @@ Table Transactions {
   transaction_type ENUM('DEPOSIT', 'WITHDRAWAL', 'TRANSFER') [not null] // 거래 유형
   transaction_result_type ENUM('SUCCESS', 'FAILED') [default: 'SUCCESS'] // 거래 결과
   amount BIGINT [not null] // 거래 금액
+  balance_snapshot BIGINT [not null] // 거래 후 잔액 스냅샷
   transacted_at DATETIME [default: `CURRENT_TIMESTAMP`] // 거래 시간
 }
 
@@ -41,4 +42,3 @@ Table RequestLogs {
   processed_at DATETIME // 요청 처리 시간
   rejection_reason VARCHAR(255) // 거절 사유 (선택)
 }
-
