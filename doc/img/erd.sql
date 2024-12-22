@@ -29,7 +29,7 @@ Table Transaction {
   transaction_result_type ENUM('SUCCESS', 'FAILED') [default: 'SUCCESS'] // 거래 결과
   amount BIGINT [not null] // 거래 금액
   balance_snapshot BIGINT [not null] // 거래 후 잔액 스냅샷
-  memo VARCHAR[255] // 메모
+  memo VARCHAR(255) // 메모
   transacted_at DATETIME [default: `CURRENT_TIMESTAMP`] // 거래 시간
 }
 
