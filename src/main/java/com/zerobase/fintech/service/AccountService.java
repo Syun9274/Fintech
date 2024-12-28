@@ -49,14 +49,8 @@ public class AccountService {
 
         String accountNumber = request.getAccountNumber();
 
-        // 계좌 불러오기 및 존재 여부 확인
-        AccountEntity account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-
-        // 은행 명 검증
-        if (!Objects.equals(account.getBankName(), "ZB_Bank")) {
-            throw new IllegalArgumentException("Account is not ZB_Bank");
-        }
+        // 계좌 유효성 검증
+        AccountEntity account = validAccount(accountNumber);
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
 
@@ -69,5 +63,28 @@ public class AccountService {
         account.setUpdatedAt(LocalDateTime.now());
 
         return accountRepository.save(account);
+    }
+
+    /**
+     * 계좌 유효성 검증 로직
+     * @param accountNumber 계좌 번호
+     * @return AccountEntity
+     */
+    private AccountEntity validAccount(String accountNumber) {
+        // 계좌 불러오기 및 존재 여부 확인
+        AccountEntity account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        // 은행 명 검증
+        if (!Objects.equals(account.getBankName(), "ZB_Bank")) {
+            throw new IllegalArgumentException("Account is not ZB_Bank");
+        }
+
+        // 계좌 상태 검증
+        if (Objects.equals(account.getAccountStatus(), AccountStatus.CLOSED)) {
+            throw new IllegalArgumentException("Account is already closed");
+        }
+
+        return account;
     }
 }
