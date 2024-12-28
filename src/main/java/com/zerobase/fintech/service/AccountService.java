@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -48,17 +48,18 @@ public class AccountService {
     public AccountEntity updateAccount(updateAccountRequest request) {
 
         String accountNumber = request.getAccountNumber();
-        Optional<AccountEntity> accountOptional = accountRepository.findByAccountNumber(accountNumber);
 
-        // 계좌가 실제로 존재 하는지 확인
-        if (accountOptional.isEmpty()) {
-            throw new IllegalArgumentException("Account not found");
+        // 계좌 불러오기 및 존재 여부 확인
+        AccountEntity account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        // 은행 명 검증
+        if (!Objects.equals(account.getBankName(), "ZB_Bank")) {
+            throw new IllegalArgumentException("Account is not ZB_Bank");
         }
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
 
-        // 계좌 불러오기
-        AccountEntity account = accountOptional.get();
 
         // 새로운 계좌 번호 생성
         String newAccountNumber = accountNumberGenerator.generateAccountNumber();
