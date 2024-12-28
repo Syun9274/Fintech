@@ -22,4 +22,21 @@ public class AccountResponse {
             return response;
         }
     }
+
+    @Data
+    public static class updateAccountResponse {
+
+        private String beforeAccountNumber;
+        private String afterAccountNumber;
+
+        public static updateAccountResponse of(String accountNumber,
+                                               AccountEntity account) {
+            updateAccountResponse response = new updateAccountResponse();
+
+            response.beforeAccountNumber = accountNumber;
+            response.afterAccountNumber = account.getAccountNumber();
+
+            return response;
+        }
+    }
 }

@@ -47,5 +47,7 @@ public class AccountEntity {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     private LocalDateTime closedAt;
 }

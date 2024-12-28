@@ -9,4 +9,9 @@ public class AccountRequest {
         private String accountAlias;
     }
 
+    @Data
+    public static class updateAccountRequest {
+        private String accountNumber;
+    }
+
 }

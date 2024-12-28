@@ -3,6 +3,7 @@ package com.zerobase.fintech.service;
 import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.common.util.AccountNumberGenerator;
 import com.zerobase.fintech.controller.dto.request.AccountRequest.createAccountRequest;
+import com.zerobase.fintech.controller.dto.request.AccountRequest.updateAccountRequest;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,17 +21,18 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator accountNumberGenerator;
 
-    // TODO: 나중에 인증 기능을 구현한 뒤에 userid를 추출 및 계좌 저장 시 적용 필요
     @Transactional
     public AccountEntity createAccount(createAccountRequest request) {
+
+        // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
 
         // 설정한 alias가 없다면 null
         String accountAlias = request.getAccountAlias();
 
-        // 계좌번호 생성
+        // 계좌 번호 생성
         String accountNumber = accountNumberGenerator.generateAccountNumber();
 
-        // 계좌번호를 비롯한 정보를 AccountEntity에 저장
+        // 계좌 번호를 비롯한 정보를 AccountEntity에 저장
         return accountRepository.save(AccountEntity.builder()
                 .userId(1L) // 인증 기능 구현 전까지 '1'로 고정 (기능 구현 후 수정 예정)
                 .accountNumber(accountNumber)
@@ -36,8 +40,33 @@ public class AccountService {
                 .accountAlias(accountAlias)
                 .balance(BigDecimal.valueOf(0))
                 .accountStatus(AccountStatus.ACTIVE)
-                .createdAt(java.time.LocalDateTime.now())
-                .closedAt(null)
+                .createdAt(LocalDateTime.now())
                 .build());
+    }
+
+    @Transactional
+    public AccountEntity updateAccount(updateAccountRequest request) {
+
+        String accountNumber = request.getAccountNumber();
+        Optional<AccountEntity> accountOptional = accountRepository.findByAccountNumber(accountNumber);
+
+        // 계좌가 실제로 존재 하는지 확인
+        if (accountOptional.isEmpty()) {
+            throw new IllegalArgumentException("Account not found");
+        }
+
+        // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
+
+        // 계좌 불러오기
+        AccountEntity account = accountOptional.get();
+
+        // 새로운 계좌 번호 생성
+        String newAccountNumber = accountNumberGenerator.generateAccountNumber();
+
+        // 변경 사항 적용
+        account.setAccountNumber(newAccountNumber);
+        account.setUpdatedAt(LocalDateTime.now());
+
+        return accountRepository.save(account);
     }
 }
