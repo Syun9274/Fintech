@@ -83,4 +83,24 @@ public class AccountResponse {
             return response;
         }
     }
+
+    @Data
+    public static class DeleteResponse {
+
+        private String bankName;
+        private String accountAlias;
+        private String accountNumber;
+        private AccountStatus accountStatus;
+
+        public static DeleteResponse of(AccountEntity account) {
+            DeleteResponse response = new DeleteResponse();
+
+            response.bankName = account.getBankName();
+            response.accountAlias = account.getAccountAlias();
+            response.accountNumber = account.getAccountNumber();
+            response.accountStatus = account.getAccountStatus();
+
+            return response;
+        }
+    }
 }

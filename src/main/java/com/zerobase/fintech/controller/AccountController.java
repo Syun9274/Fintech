@@ -46,4 +46,11 @@ public class AccountController {
         return AccountResponse.AddResponse.of(account);
     }
 
+    @DeleteMapping("delete")
+    public AccountResponse.DeleteResponse deleteAccount(
+            @RequestBody AccountRequest.DeleteRequest request) {
+        AccountEntity account = accountService.deleteAccount(request);
+
+        return AccountResponse.DeleteResponse.of(account);
+    }
 }

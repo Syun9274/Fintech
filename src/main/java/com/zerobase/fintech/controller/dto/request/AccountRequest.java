@@ -29,4 +29,9 @@ public class AccountRequest {
         private BigDecimal balance;
     }
 
+    @Data
+    public static class DeleteRequest {
+        private String accountNumber;
+    }
+
 }

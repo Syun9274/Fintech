@@ -31,8 +31,16 @@ POST http://localhost:8080/api/accounts/add
 Content-Type: application/json
 
 {
-  "bankName": "",
-  "accountNumber": "",
+  "bankName": "은행 명",
+  "accountNumber": "110123123456",
   "accountAlias": "Enter accountAlias here",
-  "balance": {}
+  "balance": 1000000
+}
+
+### 계좌 삭제 (다른 은행 계좌)
+DELETE http://localhost:8080/api/accounts/delete
+Content-Type: application/json
+
+{
+  "accountNumber": "110123123456"
 }

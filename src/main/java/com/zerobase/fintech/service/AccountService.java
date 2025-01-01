@@ -110,4 +110,18 @@ public class AccountService {
                 .createdAt(LocalDateTime.now())
                 .build());
     }
+
+    @Transactional
+    public AccountEntity deleteAccount(AccountRequest.DeleteRequest request) {
+
+        String accountNumber = request.getAccountNumber();
+
+        // 계좌 존재 여부 확인 - 다른 부분은 검증할 필요 없음
+        AccountEntity account = accountValidator.validateAccountExists(accountNumber);
+
+        account.setAccountStatus(AccountStatus.DELETED);
+        account.setClosedAt(LocalDateTime.now());
+
+        return accountRepository.save(account);
+    }
 }
