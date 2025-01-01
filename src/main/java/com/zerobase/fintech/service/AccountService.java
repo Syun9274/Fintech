@@ -100,6 +100,7 @@ public class AccountService {
         String accountAlias = request.getAccountAlias();
         BigDecimal balance = request.getBalance();
 
+        // 계좌 추가
         return accountRepository.save(AccountEntity.builder()
                 .userId(1L)
                 .accountNumber(accountNumber)
@@ -116,9 +117,13 @@ public class AccountService {
 
         String accountNumber = request.getAccountNumber();
 
-        // 계좌 존재 여부 확인 - 다른 부분은 검증할 필요 없음
+        // 계좌 유효성 검증 - 계좌 존재 여부 외 다른 부분은 검증할 필요 없음
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
 
+        // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
+
+
+        // 계좌 삭제 처리
         account.setAccountStatus(AccountStatus.DELETED);
         account.setClosedAt(LocalDateTime.now());
 
