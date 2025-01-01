@@ -2,6 +2,7 @@ package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.common.util.AccountNumberGenerator;
+import com.zerobase.fintech.common.util.AccountValidator;
 import com.zerobase.fintech.controller.dto.request.AccountRequest;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.repository.AccountRepository;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +19,7 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator accountNumberGenerator;
+    private final AccountValidator accountValidator;
 
     @Transactional
     public AccountEntity createAccount(AccountRequest.CreateRequest request) {
@@ -49,7 +50,9 @@ public class AccountService {
         String accountNumber = request.getAccountNumber();
 
         // 계좌 유효성 검증
-        AccountEntity account = validAccount(accountNumber);
+        AccountEntity account = accountValidator.validateAccountExists(accountNumber);
+        accountValidator.validateBankName(account);
+        accountValidator.validateAccountNotClosed(account);
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
 
@@ -70,7 +73,10 @@ public class AccountService {
         String accountNumber = request.getAccountNumber();
 
         // 계좌 유효성 검증
-        AccountEntity account = validAccount(accountNumber);
+        AccountEntity account = accountValidator.validateAccountExists(accountNumber);
+        accountValidator.validateBankName(account);
+        accountValidator.validateAccountNotClosed(account);
+        accountValidator.validateBalanceIsZero(account);
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
 
@@ -80,28 +86,5 @@ public class AccountService {
         account.setClosedAt(LocalDateTime.now());
 
         return accountRepository.save(account);
-    }
-
-    /**
-     * 계좌 유효성 검증 로직
-     * @param accountNumber 계좌 번호
-     * @return AccountEntity
-     */
-    private AccountEntity validAccount(String accountNumber) {
-        // 계좌 불러오기 및 존재 여부 확인
-        AccountEntity account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-
-        // 은행 명 검증
-        if (!Objects.equals(account.getBankName(), "ZB_Bank")) {
-            throw new IllegalArgumentException("Account is not ZB_Bank");
-        }
-
-        // 계좌 상태 검증
-        if (Objects.equals(account.getAccountStatus(), AccountStatus.CLOSED)) {
-            throw new IllegalArgumentException("Account is already closed");
-        }
-
-        return account;
     }
 }
