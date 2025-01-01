@@ -87,4 +87,27 @@ public class AccountService {
 
         return accountRepository.save(account);
     }
+
+    @Transactional
+    public AccountEntity addAccount(AccountRequest.AddRequest request) {
+
+        // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
+
+
+        // 입력 받은 계좌 정보
+        String bankName = request.getBankName();
+        String accountNumber = request.getAccountNumber();
+        String accountAlias = request.getAccountAlias();
+        BigDecimal balance = request.getBalance();
+
+        return accountRepository.save(AccountEntity.builder()
+                .userId(1L)
+                .accountNumber(accountNumber)
+                .bankName(bankName)
+                .accountAlias(accountAlias)
+                .balance(balance)
+                .accountStatus(AccountStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
+                .build());
+    }
 }

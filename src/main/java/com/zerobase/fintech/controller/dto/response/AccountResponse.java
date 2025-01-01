@@ -4,6 +4,7 @@ import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.entity.AccountEntity;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class AccountResponse {
@@ -58,6 +59,26 @@ public class AccountResponse {
             response.accountAlias = account.getAccountAlias();
             response.accountStatus = account.getAccountStatus();
             response.closeTime = account.getClosedAt();
+
+            return response;
+        }
+    }
+
+    @Data
+    public static class AddResponse {
+
+        private String bankName;
+        private String accountAlias;
+        private String accountNumber;
+        private BigDecimal balance;
+
+        public static AddResponse of(AccountEntity account) {
+            AddResponse response = new AddResponse();
+
+            response.bankName = account.getBankName();
+            response.accountAlias = account.getAccountAlias();
+            response.accountNumber = account.getAccountNumber();
+            response.balance = account.getBalance();
 
             return response;
         }

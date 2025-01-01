@@ -1,6 +1,5 @@
 package com.zerobase.fintech.controller;
 
-
 import com.zerobase.fintech.controller.dto.request.AccountRequest;
 import com.zerobase.fintech.controller.dto.response.AccountResponse;
 import com.zerobase.fintech.entity.AccountEntity;
@@ -37,6 +36,14 @@ public class AccountController {
         AccountEntity account = accountService.closeAccount(request);
 
         return AccountResponse.CloseResponse.of(account);
+    }
+
+    @PostMapping("add")
+    public AccountResponse.AddResponse addAccount(
+            @RequestBody AccountRequest.AddRequest request) {
+        AccountEntity account = accountService.addAccount(request);
+
+        return AccountResponse.AddResponse.of(account);
     }
 
 }

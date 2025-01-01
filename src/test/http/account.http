@@ -25,3 +25,14 @@ Content-Type: application/json
 {
   "accountNumber": ""
 }
+
+### 계좌 추가 (다른 은행 계좌)
+POST http://localhost:8080/api/accounts/add
+Content-Type: application/json
+
+{
+  "bankName": "",
+  "accountNumber": "",
+  "accountAlias": "Enter accountAlias here",
+  "balance": {}
+}
