@@ -28,7 +28,7 @@ public class AccountEntity {
     private Long userId;
 
     @NotNull
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String accountNumber;
 
     @NotNull

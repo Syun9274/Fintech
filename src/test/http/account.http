@@ -3,9 +3,25 @@ GET https://examples.http-client.intellij.net/get
     ?generated-in=IntelliJ IDEA
 
 ### 계좌 생성
-POST http://localhost:8080/accounts/create
+POST http://localhost:8080/api/accounts/create
 Content-Type: application/json
 
 {
   "accountAlias": "Enter accountAlias here"
+}
+
+### 계좌 재발급
+PUT http://localhost:8080/api/accounts/update
+Content-Type: application/json
+
+{
+  "accountNumber": "4681735726640826"
+}
+
+### 계좌 해지
+DELETE http://localhost:8080/api/accounts/close
+Content-Type: application/json
+
+{
+  "accountNumber": "4681735726641501"
 }

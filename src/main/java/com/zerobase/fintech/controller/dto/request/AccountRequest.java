@@ -5,12 +5,17 @@ import lombok.Data;
 public class AccountRequest {
 
     @Data
-    public static class createAccountRequest {
+    public static class CreateRequest {
         private String accountAlias;
     }
 
     @Data
-    public static class updateAccountRequest {
+    public static class UpdateRequest {
+        private String accountNumber;
+    }
+
+    @Data
+    public static class CloseRequest {
         private String accountNumber;
     }
 

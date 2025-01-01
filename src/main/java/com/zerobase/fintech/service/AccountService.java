@@ -2,8 +2,7 @@ package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.common.util.AccountNumberGenerator;
-import com.zerobase.fintech.controller.dto.request.AccountRequest.createAccountRequest;
-import com.zerobase.fintech.controller.dto.request.AccountRequest.updateAccountRequest;
+import com.zerobase.fintech.controller.dto.request.AccountRequest;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class AccountService {
     private final AccountNumberGenerator accountNumberGenerator;
 
     @Transactional
-    public AccountEntity createAccount(createAccountRequest request) {
+    public AccountEntity createAccount(AccountRequest.CreateRequest request) {
 
         // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
 
@@ -45,7 +44,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity updateAccount(updateAccountRequest request) {
+    public AccountEntity updateAccount(AccountRequest.UpdateRequest request) {
 
         String accountNumber = request.getAccountNumber();
 
@@ -61,6 +60,24 @@ public class AccountService {
         // 변경 사항 적용
         account.setAccountNumber(newAccountNumber);
         account.setUpdatedAt(LocalDateTime.now());
+
+        return accountRepository.save(account);
+    }
+
+    @Transactional
+    public AccountEntity closeAccount(AccountRequest.CloseRequest request) {
+
+        String accountNumber = request.getAccountNumber();
+
+        // 계좌 유효성 검증
+        AccountEntity account = validAccount(accountNumber);
+
+        // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
+
+
+        // 계좌 해지 처리
+        account.setAccountStatus(AccountStatus.CLOSED);
+        account.setClosedAt(LocalDateTime.now());
 
         return accountRepository.save(account);
     }

@@ -1,19 +1,22 @@
 package com.zerobase.fintech.controller.dto.response;
 
+import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.entity.AccountEntity;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 public class AccountResponse {
 
     @Data
-    public static class createAccountResponse {
+    public static class CreateResponse {
 
         private String bankName;
         private String accountAlias;
         private String accountNumber;
 
-        public static createAccountResponse of(AccountEntity account) {
-            createAccountResponse response = new createAccountResponse();
+        public static CreateResponse of(AccountEntity account) {
+            CreateResponse response = new CreateResponse();
 
             response.bankName = account.getBankName();
             response.accountAlias = account.getAccountAlias();
@@ -24,17 +27,37 @@ public class AccountResponse {
     }
 
     @Data
-    public static class updateAccountResponse {
+    public static class UpdateResponse {
 
         private String beforeAccountNumber;
         private String afterAccountNumber;
 
-        public static updateAccountResponse of(String accountNumber,
-                                               AccountEntity account) {
-            updateAccountResponse response = new updateAccountResponse();
+        public static UpdateResponse of(String accountNumber,
+                                        AccountEntity account) {
+            UpdateResponse response = new UpdateResponse();
 
             response.beforeAccountNumber = accountNumber;
             response.afterAccountNumber = account.getAccountNumber();
+
+            return response;
+        }
+    }
+
+    @Data
+    public static class CloseResponse {
+
+        private String accountNumber;
+        private String accountAlias;
+        private AccountStatus accountStatus;
+        private LocalDateTime closeTime;
+
+        public static CloseResponse of(AccountEntity account) {
+            CloseResponse response = new CloseResponse();
+
+            response.accountNumber = account.getAccountNumber();
+            response.accountAlias = account.getAccountAlias();
+            response.accountStatus = account.getAccountStatus();
+            response.closeTime = account.getClosedAt();
 
             return response;
         }

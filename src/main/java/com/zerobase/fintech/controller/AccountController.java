@@ -1,34 +1,42 @@
 package com.zerobase.fintech.controller;
 
-import com.zerobase.fintech.controller.dto.request.AccountRequest.*;
-import com.zerobase.fintech.controller.dto.response.AccountResponse.*;
+
+import com.zerobase.fintech.controller.dto.request.AccountRequest;
+import com.zerobase.fintech.controller.dto.response.AccountResponse;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/accounts")
+@RequestMapping("api/accounts")
 @RestController
 public class AccountController {
 
     private final AccountService accountService;
 
     @PostMapping("/create")
-    public createAccountResponse createAccount(@RequestBody createAccountRequest request) {
+    public AccountResponse.CreateResponse createAccount(
+            @RequestBody AccountRequest.CreateRequest request) {
         AccountEntity account = accountService.createAccount(request);
 
-        return createAccountResponse.of(account);
+        return AccountResponse.CreateResponse.of(account);
     }
 
-    @PostMapping("update")
-    public updateAccountResponse updateAccount(@RequestBody updateAccountRequest request) {
+    @PutMapping("update")
+    public AccountResponse.UpdateResponse updateAccount(
+            @RequestBody AccountRequest.UpdateRequest request) {
         AccountEntity account = accountService.updateAccount(request);
 
-        return updateAccountResponse.of(request.getAccountNumber(), account);
+        return AccountResponse.UpdateResponse.of(request.getAccountNumber(), account);
+    }
+
+    @DeleteMapping("close")
+    public AccountResponse.CloseResponse closeAccount(
+            @RequestBody AccountRequest.CloseRequest request) {
+        AccountEntity account = accountService.closeAccount(request);
+
+        return AccountResponse.CloseResponse.of(account);
     }
 
 }
