@@ -10,7 +10,7 @@ public class BaseAccountRequest {
 
     @NotBlank(message = "Account Number is required")
     @Pattern(
-            regexp = "\\d{10,15}",
+            regexp = "\\d{10,20}",
             message = "Account number must be between 10 and 15 digits"
     )
     private String accountNumber;
