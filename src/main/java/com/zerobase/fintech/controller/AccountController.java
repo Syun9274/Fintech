@@ -4,6 +4,7 @@ import com.zerobase.fintech.controller.dto.request.AccountRequest;
 import com.zerobase.fintech.controller.dto.response.AccountResponse;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class AccountController {
 
     @PutMapping("update")
     public AccountResponse.UpdateResponse updateAccount(
-            @RequestBody AccountRequest.UpdateRequest request) {
+            @Valid @RequestBody AccountRequest.UpdateRequest request) {
         AccountEntity account = accountService.updateAccount(request);
 
         return AccountResponse.UpdateResponse.of(request.getAccountNumber(), account);
@@ -32,7 +33,7 @@ public class AccountController {
 
     @DeleteMapping("close")
     public AccountResponse.CloseResponse closeAccount(
-            @RequestBody AccountRequest.CloseRequest request) {
+            @Valid @RequestBody AccountRequest.CloseRequest request) {
         AccountEntity account = accountService.closeAccount(request);
 
         return AccountResponse.CloseResponse.of(account);
@@ -40,7 +41,7 @@ public class AccountController {
 
     @PostMapping("add")
     public AccountResponse.AddResponse addAccount(
-            @RequestBody AccountRequest.AddRequest request) {
+            @Valid @RequestBody AccountRequest.AddRequest request) {
         AccountEntity account = accountService.addAccount(request);
 
         return AccountResponse.AddResponse.of(account);
@@ -48,7 +49,7 @@ public class AccountController {
 
     @DeleteMapping("delete")
     public AccountResponse.DeleteResponse deleteAccount(
-            @RequestBody AccountRequest.DeleteRequest request) {
+            @Valid @RequestBody AccountRequest.DeleteRequest request) {
         AccountEntity account = accountService.deleteAccount(request);
 
         return AccountResponse.DeleteResponse.of(account);

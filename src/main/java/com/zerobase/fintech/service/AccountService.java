@@ -96,7 +96,7 @@ public class AccountService {
 
         // 입력 받은 계좌 정보
         String bankName = request.getBankName();
-        String accountNumber = request.getAccountNumber();
+        String accountNumber = request.getAccountNumberRequest().getAccountNumber();
         String accountAlias = request.getAccountAlias();
         BigDecimal balance = request.getBalance();
 
