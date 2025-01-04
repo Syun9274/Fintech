@@ -64,7 +64,7 @@ public class AccountService {
         account.setAccountNumber(newAccountNumber);
         account.setUpdatedAt(LocalDateTime.now());
 
-        return accountRepository.save(account);
+        return account;
     }
 
     @Transactional
@@ -85,7 +85,7 @@ public class AccountService {
         account.setAccountStatus(AccountStatus.CLOSED);
         account.setClosedAt(LocalDateTime.now());
 
-        return accountRepository.save(account);
+        return account;
     }
 
     @Transactional
@@ -127,6 +127,6 @@ public class AccountService {
         account.setAccountStatus(AccountStatus.DELETED);
         account.setClosedAt(LocalDateTime.now());
 
-        return accountRepository.save(account);
+        return account;
     }
 }
