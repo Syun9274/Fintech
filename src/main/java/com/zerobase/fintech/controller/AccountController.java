@@ -15,7 +15,7 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @PostMapping("/create")
+    @PostMapping
     public AccountResponse.CreateResponse createAccount(
             @RequestBody AccountRequest.CreateRequest request) {
         AccountEntity account = accountService.createAccount(request);
@@ -23,35 +23,36 @@ public class AccountController {
         return AccountResponse.CreateResponse.of(account);
     }
 
-    @PutMapping("update")
+    @PutMapping("/{accountNumber}")
     public AccountResponse.UpdateResponse updateAccount(
-            @Valid @RequestBody AccountRequest.UpdateRequest request) {
-        AccountEntity account = accountService.updateAccount(request);
+            @PathVariable String accountNumber,
+            @RequestBody AccountRequest.UpdateRequest request) {
+        AccountEntity account = accountService.updateAccount(accountNumber, request);
 
-        return AccountResponse.UpdateResponse.of(request.getAccountNumber(), account);
+        return AccountResponse.UpdateResponse.of(accountNumber, account);
     }
 
-    @DeleteMapping("close")
+    @DeleteMapping("/{accountNumber}")
     public AccountResponse.CloseResponse closeAccount(
-            @Valid @RequestBody AccountRequest.CloseRequest request) {
-        AccountEntity account = accountService.closeAccount(request);
+            @PathVariable String accountNumber) {
+        AccountEntity account = accountService.closeAccount(accountNumber);
 
         return AccountResponse.CloseResponse.of(account);
     }
 
-    @PostMapping("add")
-    public AccountResponse.AddResponse addAccount(
+    @PostMapping("/external")
+    public AccountResponse.AddExternalResponse addExternalAccount(
             @Valid @RequestBody AccountRequest.AddRequest request) {
-        AccountEntity account = accountService.addAccount(request);
+        AccountEntity account = accountService.addExternalAccount(request);
 
-        return AccountResponse.AddResponse.of(account);
+        return AccountResponse.AddExternalResponse.of(account);
     }
 
-    @DeleteMapping("delete")
-    public AccountResponse.DeleteResponse deleteAccount(
-            @Valid @RequestBody AccountRequest.DeleteRequest request) {
-        AccountEntity account = accountService.deleteAccount(request);
+    @DeleteMapping("/external/{accountNumber}")
+    public AccountResponse.DeleteExternalResponse deleteExternalAccount(
+            @PathVariable String accountNumber) {
+        AccountEntity account = accountService.deleteExternalAccount(accountNumber);
 
-        return AccountResponse.DeleteResponse.of(account);
+        return AccountResponse.DeleteExternalResponse.of(account);
     }
 }

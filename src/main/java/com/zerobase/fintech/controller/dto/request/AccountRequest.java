@@ -1,9 +1,9 @@
 package com.zerobase.fintech.controller.dto.request;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,19 +16,22 @@ public class AccountRequest {
     }
 
     @Data
-    public static class UpdateRequest extends BaseAccountRequest { }
+    public static class UpdateRequest {
+        private String accountAlias;
+    }
 
     @Data
-    public static class CloseRequest extends BaseAccountRequest { }
-
-    @Data
-    public static class AddRequest{
+    public static class AddRequest {
 
         @NotBlank(message = "Bank name is required")
         private String bankName;
 
-        @Valid
-        private BaseAccountRequest accountNumberRequest;
+        @NotBlank(message = "Account Number is required")
+        @Pattern(
+                regexp = "\\d{10,20}",
+                message = "Account number must be between 10 and 15 digits"
+        )
+        private String accountNumber;
 
         private String accountAlias;
 
@@ -39,7 +42,4 @@ public class AccountRequest {
         )
         private BigDecimal balance;
     }
-
-    @Data
-    public static class DeleteRequest extends BaseAccountRequest { }
 }

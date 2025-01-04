@@ -26,13 +26,13 @@ public class AccountService {
 
         // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
 
-        // 설정한 alias가 없다면 null
+        // 설정한 alias 없다면 null
         String accountAlias = request.getAccountAlias();
 
         // 계좌 번호 생성
         String accountNumber = accountNumberGenerator.generateAccountNumber();
 
-        // 계좌 번호를 비롯한 정보를 AccountEntity에 저장
+        // 계좌 번호를 비롯한 정보를 AccountEntity 저장
         return accountRepository.save(AccountEntity.builder()
                 .userId(1L) // 인증 기능 구현 전까지 '1'로 고정 (기능 구현 후 수정 예정)
                 .accountNumber(accountNumber)
@@ -45,9 +45,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity updateAccount(AccountRequest.UpdateRequest request) {
-
-        String accountNumber = request.getAccountNumber();
+    public AccountEntity updateAccount(String accountNumber, AccountRequest.UpdateRequest request) {
 
         // 계좌 유효성 검증
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
@@ -62,15 +60,14 @@ public class AccountService {
 
         // 변경 사항 적용
         account.setAccountNumber(newAccountNumber);
+        account.setAccountAlias(request.getAccountAlias());
         account.setUpdatedAt(LocalDateTime.now());
 
         return account;
     }
 
     @Transactional
-    public AccountEntity closeAccount(AccountRequest.CloseRequest request) {
-
-        String accountNumber = request.getAccountNumber();
+    public AccountEntity closeAccount(String accountNumber) {
 
         // 계좌 유효성 검증
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
@@ -89,14 +86,14 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity addAccount(AccountRequest.AddRequest request) {
+    public AccountEntity addExternalAccount(AccountRequest.AddRequest request) {
 
         // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
 
 
         // 입력 받은 계좌 정보
         String bankName = request.getBankName();
-        String accountNumber = request.getAccountNumberRequest().getAccountNumber();
+        String accountNumber = request.getAccountNumber();
         String accountAlias = request.getAccountAlias();
         BigDecimal balance = request.getBalance();
 
@@ -113,9 +110,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity deleteAccount(AccountRequest.DeleteRequest request) {
-
-        String accountNumber = request.getAccountNumber();
+    public AccountEntity deleteExternalAccount(String accountNumber) {
 
         // 계좌 유효성 검증 - 계좌 존재 여부 외 다른 부분은 검증할 필요 없음
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);

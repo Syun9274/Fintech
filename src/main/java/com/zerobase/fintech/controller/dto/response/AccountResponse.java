@@ -65,15 +65,15 @@ public class AccountResponse {
     }
 
     @Data
-    public static class AddResponse {
+    public static class AddExternalResponse {
 
         private String bankName;
         private String accountAlias;
         private String accountNumber;
         private BigDecimal balance;
 
-        public static AddResponse of(AccountEntity account) {
-            AddResponse response = new AddResponse();
+        public static AddExternalResponse of(AccountEntity account) {
+            AddExternalResponse response = new AddExternalResponse();
 
             response.bankName = account.getBankName();
             response.accountAlias = account.getAccountAlias();
@@ -85,15 +85,15 @@ public class AccountResponse {
     }
 
     @Data
-    public static class DeleteResponse {
+    public static class DeleteExternalResponse {
 
         private String bankName;
         private String accountAlias;
         private String accountNumber;
         private AccountStatus accountStatus;
 
-        public static DeleteResponse of(AccountEntity account) {
-            DeleteResponse response = new DeleteResponse();
+        public static DeleteExternalResponse of(AccountEntity account) {
+            DeleteExternalResponse response = new DeleteExternalResponse();
 
             response.bankName = account.getBankName();
             response.accountAlias = account.getAccountAlias();

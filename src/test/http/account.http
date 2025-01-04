@@ -3,7 +3,7 @@ GET https://examples.http-client.intellij.net/get
     ?generated-in=IntelliJ IDEA
 
 ### 계좌 생성
-POST http://localhost:8080/api/accounts/create
+POST http://localhost:8080/api/accounts
 Content-Type: application/json
 
 {
@@ -11,23 +11,19 @@ Content-Type: application/json
 }
 
 ### 계좌 재발급
-PUT http://localhost:8080/api/accounts/update
+PUT http://localhost:8080/api/accounts/{accountNumber}
 Content-Type: application/json
 
 {
-  "accountNumber": ""
+  "accountAlias": "Enter accountAlias here"
 }
 
 ### 계좌 해지
-DELETE http://localhost:8080/api/accounts/close
+DELETE http://localhost:8080/api/accounts/{accountNumber}
 Content-Type: application/json
 
-{
-  "accountNumber": ""
-}
-
 ### 계좌 추가 (다른 은행 계좌)
-POST http://localhost:8080/api/accounts/add
+POST http://localhost:8080/api/accounts/external
 Content-Type: application/json
 
 {
@@ -38,9 +34,5 @@ Content-Type: application/json
 }
 
 ### 계좌 삭제 (다른 은행 계좌)
-DELETE http://localhost:8080/api/accounts/delete
+DELETE http://localhost:8080/api/accounts/external/110123123456
 Content-Type: application/json
-
-{
-  "accountNumber": "110123123456"
-}
