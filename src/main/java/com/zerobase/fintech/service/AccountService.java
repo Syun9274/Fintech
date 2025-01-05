@@ -48,6 +48,7 @@ public class AccountService {
     public AccountEntity updateAccount(String accountNumber, AccountRequest.UpdateRequest request) {
 
         // 계좌 유효성 검증
+        accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateBankName(account);
         accountValidator.validateAccountNotClosed(account);
@@ -70,6 +71,7 @@ public class AccountService {
     public AccountEntity closeAccount(String accountNumber) {
 
         // 계좌 유효성 검증
+        accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateBankName(account);
         accountValidator.validateAccountNotClosed(account);
@@ -113,6 +115,7 @@ public class AccountService {
     public AccountEntity deleteExternalAccount(String accountNumber) {
 
         // 계좌 유효성 검증 - 계좌 존재 여부 외 다른 부분은 검증할 필요 없음
+        accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음

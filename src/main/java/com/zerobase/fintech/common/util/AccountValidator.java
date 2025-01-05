@@ -17,6 +17,13 @@ public class AccountValidator {
         this.accountRepository = accountRepository;
     }
 
+    // 계좌 번호 형식 확인
+    public void validateAccountNumber(String accountNumber) {
+        if (!accountNumber.matches("\\d{10,20}")) {
+            throw new IllegalArgumentException("Account number must be between 10 and 20 digits");
+        }
+    }
+
     // 계좌 존재 여부 확인
     public AccountEntity validateAccountExists(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
