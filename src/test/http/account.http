@@ -1,0 +1,38 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+### 계좌 생성
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "accountAlias": "Enter accountAlias here"
+}
+
+### 계좌 재발급
+PUT http://localhost:8080/api/accounts/{accountNumber}
+Content-Type: application/json
+
+{
+  "accountAlias": "Enter accountAlias here"
+}
+
+### 계좌 해지
+DELETE http://localhost:8080/api/accounts/{accountNumber}
+Content-Type: application/json
+
+### 계좌 추가 (다른 은행 계좌)
+POST http://localhost:8080/api/accounts/external
+Content-Type: application/json
+
+{
+  "bankName": "은행 명",
+  "accountNumber": "110123123456",
+  "accountAlias": "Enter accountAlias here",
+  "balance": 1000000
+}
+
+### 계좌 삭제 (다른 은행 계좌)
+DELETE http://localhost:8080/api/accounts/external/110123123456
+Content-Type: application/json
