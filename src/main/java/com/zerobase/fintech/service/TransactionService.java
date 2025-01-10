@@ -23,7 +23,7 @@ public class TransactionService {
     private final AccountValidator accountValidator;
     private final TransactionValidator transactionValidator;
 
-    public TransactionEntity deposit(TransactionRequest.DepositRequest request) {
+    public TransactionEntity deposit(TransactionRequest request) {
 
         // 거래 예정 금액
         BigDecimal amount = request.getAmount();
@@ -50,6 +50,44 @@ public class TransactionService {
 
             // 입금 작업 실시
             performDeposit(account, amount);
+
+        } catch (Exception e) {
+            // 거래 실패 처리
+            return saveTransaction(transaction, TransactionStatus.FAILED);
+        }
+
+        // 거래 완료
+        return saveTransaction(transaction, TransactionStatus.SUCCESS);
+    }
+
+    public TransactionEntity withdrawal(TransactionRequest request) {
+
+        // 거래 예정 금액
+        BigDecimal amount = request.getAmount();
+
+        TransactionEntity transaction = initializeTransaction(
+                TransactionType.WITHDRAWAL,
+                "출금");
+
+        try {
+            // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
+            // 거래와 관련된 모든 정보 검증
+            accountValidator.validateAccountNumber(request.getAccountNumber());
+            AccountEntity account = accountValidator.validateAccountExists(request.getAccountNumber());
+            accountValidator.validateAccountNotActive(account);
+            accountValidator.validateBalanceIsMoreThanAmount(account, amount);
+            transactionValidator.validateTransactionAmountIsPositive(amount);
+
+            // 검증 후 거래 기록 저장
+            transaction.setSenderAccount(account);
+            transaction.setAmount(amount);
+
+            // snapshot 생성 및 저장
+            AccountSnapshot snapshot = createAccountSnapshot(account, null, amount);
+            transaction.setSnapshot(snapshot);
+
+            // 입금 작업 실시
+            performWithdrawal(account, amount);
 
         } catch (Exception e) {
             // 거래 실패 처리

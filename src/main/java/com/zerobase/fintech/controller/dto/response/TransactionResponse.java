@@ -5,6 +5,7 @@ import com.zerobase.fintech.common.enums.TransactionType;
 import com.zerobase.fintech.entity.TransactionEntity;
 import lombok.Data;
 
+@Data
 public class TransactionResponse {
 
     @Data
@@ -23,6 +24,30 @@ public class TransactionResponse {
             response.receiverAccountNumber = transaction.getReceiverAccount().getAccountNumber();
             response.amount = transaction.getAmount().toString();
             response.balance = transaction.getReceiverAccount().getBalance().toString();
+            response.memo = transaction.getMemo();
+            response.transactionType = transaction.getTransactionType();
+            response.transactionStatus = transaction.getTransactionStatus();
+
+            return response;
+        }
+    }
+
+    @Data
+    public static class WithdrawalResponse {
+
+        private String senderAccountNumber;
+        private String amount;
+        private String balance;
+        private String memo;
+        private TransactionType transactionType;
+        private TransactionStatus transactionStatus;
+
+        public static WithdrawalResponse of(TransactionEntity transaction) {
+            WithdrawalResponse response = new WithdrawalResponse();
+
+            response.senderAccountNumber = transaction.getSenderAccount().getAccountNumber();
+            response.amount = transaction.getAmount().toString();
+            response.balance = transaction.getSenderAccount().getBalance().toString();
             response.memo = transaction.getMemo();
             response.transactionType = transaction.getTransactionType();
             response.transactionStatus = transaction.getTransactionStatus();

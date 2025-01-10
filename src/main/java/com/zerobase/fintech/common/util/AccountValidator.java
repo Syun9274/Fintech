@@ -36,7 +36,7 @@ public class AccountValidator {
     }
 
     // 계좌 해지 여부 확인
-    public void validateAccountNotClosed(AccountEntity account) {
+    public void validateAccountIsClosed(AccountEntity account) {
         if (Objects.equals(account.getAccountStatus(), AccountStatus.CLOSED)) {
             throw new IllegalArgumentException("Account is already closed");
         }
@@ -53,6 +53,13 @@ public class AccountValidator {
     public void validateBalanceIsZero(AccountEntity account) {
         if (account.getBalance().compareTo(BigDecimal.ZERO) > 0) {
             throw new IllegalArgumentException("Account balance must be zero before closing the account");
+        }
+    }
+
+    // 계좌 출금 잔액 확인
+    public void validateBalanceIsMoreThanAmount(AccountEntity account, BigDecimal amount) {
+        if (account.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Account balance must be equal to or greater than the amount");
         }
     }
 }

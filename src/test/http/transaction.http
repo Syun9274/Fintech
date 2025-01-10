@@ -7,6 +7,15 @@ POST http://localhost:8080/api/transactions/deposit
 Content-Type: application/json
 
 {
-  "accountNumber": "",
-  "amount":
+  "accountNumber": "110123123456",
+  "amount": 50000
+}
+
+### 출금
+POST http://localhost:8080/api/transactions/withdrawal
+Content-Type: application/json
+
+{
+  "accountNumber": "110123123456",
+  "amount": 12000
 }

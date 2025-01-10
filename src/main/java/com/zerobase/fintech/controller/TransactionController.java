@@ -20,11 +20,20 @@ public class TransactionController {
 
     @PostMapping("/deposit")
     public TransactionResponse.DepositResponse deposit(
-            @Valid @RequestBody TransactionRequest.DepositRequest request
+            @Valid @RequestBody TransactionRequest request
     ) {
         TransactionEntity transaction = transactionService.deposit(request);
 
         return TransactionResponse.DepositResponse.of(transaction);
+    }
+
+    @PostMapping("/withdrawal")
+    public TransactionResponse.WithdrawalResponse withdrawal(
+            @Valid @RequestBody TransactionRequest request
+    ) {
+        TransactionEntity transaction = transactionService.withdrawal(request);
+
+        return TransactionResponse.WithdrawalResponse.of(transaction);
     }
 
 }

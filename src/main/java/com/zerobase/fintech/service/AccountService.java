@@ -51,7 +51,7 @@ public class AccountService {
         accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateBankName(account);
-        accountValidator.validateAccountNotClosed(account);
+        accountValidator.validateAccountIsClosed(account);
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
 
@@ -74,7 +74,7 @@ public class AccountService {
         accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateBankName(account);
-        accountValidator.validateAccountNotClosed(account);
+        accountValidator.validateAccountIsClosed(account);
         accountValidator.validateBalanceIsZero(account);
 
         // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
