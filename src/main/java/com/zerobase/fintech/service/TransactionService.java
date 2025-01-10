@@ -11,6 +11,7 @@ import com.zerobase.fintech.entity.TransactionEntity;
 import com.zerobase.fintech.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class TransactionService {
     private final AccountValidator accountValidator;
     private final TransactionValidator transactionValidator;
 
+    @Transactional
     public TransactionEntity deposit(TransactionRequest request) {
 
         // 거래 예정 금액
@@ -60,6 +62,7 @@ public class TransactionService {
         return saveTransaction(transaction, TransactionStatus.SUCCESS);
     }
 
+    @Transactional
     public TransactionEntity withdrawal(TransactionRequest request) {
 
         // 거래 예정 금액
