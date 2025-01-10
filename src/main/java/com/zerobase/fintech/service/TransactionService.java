@@ -86,7 +86,7 @@ public class TransactionService {
             AccountSnapshot snapshot = createAccountSnapshot(account, null, amount);
             transaction.setSnapshot(snapshot);
 
-            // 입금 작업 실시
+            // 출금 작업 실시
             performWithdrawal(account, amount);
 
         } catch (Exception e) {
