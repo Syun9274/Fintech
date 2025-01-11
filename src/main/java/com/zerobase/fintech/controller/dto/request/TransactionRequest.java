@@ -26,6 +26,7 @@ public class TransactionRequest {
     )
     private BigDecimal amount;
 
+    @Data
     public static class TransferRequest extends TransactionRequest {
 
         @NotBlank(message = "Account Number is required")

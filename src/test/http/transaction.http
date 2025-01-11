@@ -19,3 +19,14 @@ Content-Type: application/json
   "accountNumber": "110123123456",
   "amount": 12000
 }
+
+### 송금
+POST http://localhost:8080/api/transactions/transfer
+Content-Type: application/json
+
+{
+  "accountNumber": "110123123456",
+  "receiverAccountNumber": "",
+  "memo": "transfer API Test",
+  "amount": 50000
+}

@@ -36,4 +36,13 @@ public class TransactionController {
         return TransactionResponse.WithdrawalResponse.of(transaction);
     }
 
+    @PostMapping("/transfer")
+    public TransactionResponse.TransferResponse transfer(
+            @Valid @RequestBody TransactionRequest.TransferRequest request
+    ) {
+        TransactionEntity transaction = transactionService.transfer(request);
+
+        return TransactionResponse.TransferResponse.of(transaction);
+    }
+
 }

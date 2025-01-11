@@ -36,11 +36,8 @@ public class TransactionService {
 
         try {
             // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
-            // 거래와 관련된 모든 정보 검증
-            accountValidator.validateAccountNumber(request.getAccountNumber());
-            AccountEntity account = accountValidator.validateAccountExists(request.getAccountNumber());
-            accountValidator.validateAccountNotActive(account);
-            transactionValidator.validateTransactionAmountIsPositive(amount);
+            // 계좌 검증
+            AccountEntity account = validateReceiverAccount(request.getAccountNumber(), amount);
 
             // 검증 후 거래 기록 저장
             transaction.setReceiverAccount(account);
@@ -74,12 +71,8 @@ public class TransactionService {
 
         try {
             // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
-            // 거래와 관련된 모든 정보 검증
-            accountValidator.validateAccountNumber(request.getAccountNumber());
-            AccountEntity account = accountValidator.validateAccountExists(request.getAccountNumber());
-            accountValidator.validateAccountNotActive(account);
-            accountValidator.validateBalanceIsMoreThanAmount(account, amount);
-            transactionValidator.validateTransactionAmountIsPositive(amount);
+            // 계좌 검증
+            AccountEntity account = validateSenderAccount(request.getAccountNumber(), amount);
 
             // 검증 후 거래 기록 저장
             transaction.setSenderAccount(account);
@@ -99,6 +92,73 @@ public class TransactionService {
 
         // 거래 완료
         return saveTransaction(transaction, TransactionStatus.SUCCESS);
+    }
+
+    @Transactional
+    public TransactionEntity transfer(TransactionRequest.TransferRequest request) {
+
+        // 계좌 불일치 검증
+        transactionValidator.validateTransactionAccountsAreDifferent(
+                request.getAccountNumber(),
+                request.getReceiverAccountNumber());
+
+        // 거래 예정 금액
+        BigDecimal amount = request.getAmount();
+
+        // memo 설정
+        TransactionEntity transaction = initializeTransaction(
+                TransactionType.TRANSFER,
+                request.getMemo());
+
+        try {
+            // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
+            // 출금 계좌 검증
+            AccountEntity senderAccount = validateSenderAccount(request.getAccountNumber(), amount);
+
+            // 입금 계좌 검증
+            AccountEntity receiverAccount = validateReceiverAccount(request.getReceiverAccountNumber(), amount);
+
+            // 검증 후 거래 기록 저장
+            transaction.setSenderAccount(senderAccount);
+            transaction.setReceiverAccount(receiverAccount);
+            transaction.setAmount(amount);
+
+            // snapshot 생성 및 저장
+            AccountSnapshot snapshot = createAccountSnapshot(senderAccount, receiverAccount, amount);
+            transaction.setSnapshot(snapshot);
+
+            // 송금 작업 실시
+            performWithdrawal(senderAccount, amount);
+            performDeposit(receiverAccount, amount);
+
+        } catch (Exception e) {
+            // 거래 실패 처리
+            return saveTransaction(transaction, TransactionStatus.FAILED);
+        }
+
+        // 거래 완료
+        return saveTransaction(transaction, TransactionStatus.SUCCESS);
+    }
+
+    // 출금 계좌 검증
+    private AccountEntity validateSenderAccount(String accountNumber, BigDecimal amount) {
+        accountValidator.validateAccountNumber(accountNumber);
+        AccountEntity account = accountValidator.validateAccountExists(accountNumber);
+        accountValidator.validateAccountNotActive(account);
+        accountValidator.validateBalanceIsMoreThanAmount(account, amount);
+        transactionValidator.validateTransactionAmountIsPositive(amount);
+
+        return account;
+    }
+
+    // 입금 계좌 검증
+    private AccountEntity validateReceiverAccount(String accountNumber, BigDecimal amount) {
+        accountValidator.validateAccountNumber(accountNumber);
+        AccountEntity account = accountValidator.validateAccountExists(accountNumber);
+        accountValidator.validateAccountNotActive(account);
+        transactionValidator.validateTransactionAmountIsPositive(amount);
+
+        return account;
     }
 
     // 거래 기록 생성

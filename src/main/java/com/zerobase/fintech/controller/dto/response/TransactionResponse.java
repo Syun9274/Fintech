@@ -55,4 +55,30 @@ public class TransactionResponse {
             return response;
         }
     }
+
+    @Data
+    public static class TransferResponse {
+
+        private String senderAccountNumber;
+        private String receiverAccountNumber;
+        private String amount;
+        private String balance;
+        private String memo;
+        private TransactionType transactionType;
+        private TransactionStatus transactionStatus;
+
+        public static TransferResponse of(TransactionEntity transaction) {
+            TransferResponse response = new TransferResponse();
+
+            response.senderAccountNumber = transaction.getSenderAccount().getAccountNumber();
+            response.receiverAccountNumber = transaction.getReceiverAccount().getAccountNumber();
+            response.amount = transaction.getAmount().toString();
+            response.balance = transaction.getSenderAccount().getBalance().toString();
+            response.memo = transaction.getMemo();
+            response.transactionType = transaction.getTransactionType();
+            response.transactionStatus = transaction.getTransactionStatus();
+
+            return response;
+        }
+    }
 }
