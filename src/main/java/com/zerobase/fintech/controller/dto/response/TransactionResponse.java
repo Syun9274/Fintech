@@ -49,9 +49,11 @@ public class TransactionResponse {
 
         public static WithdrawalResponse of(TransactionEntity transaction) {
             WithdrawalResponse response = new WithdrawalResponse();
+
             response.populateCommonFields(transaction);
             response.senderAccountNumber = transaction.getSenderAccount().getAccountNumber();
             response.setBalance(transaction.getSenderAccount().getBalance().toString());
+
             return response;
         }
     }
@@ -64,10 +66,12 @@ public class TransactionResponse {
 
         public static TransferResponse of(TransactionEntity transaction) {
             TransferResponse response = new TransferResponse();
+
             response.populateCommonFields(transaction);
             response.senderAccountNumber = transaction.getSenderAccount().getAccountNumber();
             response.receiverAccountNumber = transaction.getReceiverAccount().getAccountNumber();
             response.setBalance(transaction.getSenderAccount().getBalance().toString());
+
             return response;
         }
     }
