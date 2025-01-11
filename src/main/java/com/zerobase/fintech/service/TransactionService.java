@@ -37,7 +37,7 @@ public class TransactionService {
         try {
             // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
             // 계좌 검증
-            AccountEntity account = validateReceiverAccount(request.getAccountNumber(), amount);
+            AccountEntity account = validateReceiverAccount(request.getAccountNumber());
 
             // 검증 후 거래 기록 저장
             transaction.setReceiverAccount(account);
@@ -116,7 +116,7 @@ public class TransactionService {
             AccountEntity senderAccount = validateSenderAccount(request.getAccountNumber(), amount);
 
             // 입금 계좌 검증
-            AccountEntity receiverAccount = validateReceiverAccount(request.getReceiverAccountNumber(), amount);
+            AccountEntity receiverAccount = validateReceiverAccount(request.getReceiverAccountNumber());
 
             // 검증 후 거래 기록 저장
             transaction.setSenderAccount(senderAccount);
@@ -152,11 +152,10 @@ public class TransactionService {
     }
 
     // 입금 계좌 검증
-    private AccountEntity validateReceiverAccount(String accountNumber, BigDecimal amount) {
+    private AccountEntity validateReceiverAccount(String accountNumber) {
         accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateAccountNotActive(account);
-        transactionValidator.validateTransactionAmountIsPositive(amount);
 
         return account;
     }
