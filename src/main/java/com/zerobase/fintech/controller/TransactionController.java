@@ -6,10 +6,9 @@ import com.zerobase.fintech.entity.TransactionEntity;
 import com.zerobase.fintech.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("api/transactions")
@@ -43,6 +42,15 @@ public class TransactionController {
         TransactionEntity transaction = transactionService.transfer(request);
 
         return TransactionResponse.TransferResponse.of(transaction);
+    }
+
+    @GetMapping("history/{accountNumber}")
+    public List<TransactionResponse.HistoryResponse> getTransactionsHistory(
+            @PathVariable String accountNumber
+    ) {
+        List<TransactionEntity> transactionHistories = transactionService.showTransactionHistory(accountNumber);
+
+        return TransactionResponse.HistoryResponse.of(transactionHistories, accountNumber);
     }
 
 }

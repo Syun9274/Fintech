@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -138,6 +139,23 @@ public class TransactionService {
 
         // 거래 완료
         return saveTransaction(transaction, TransactionStatus.SUCCESS);
+    }
+
+    // 거래 기록 불러오기
+    public List<TransactionEntity> showTransactionHistory(String accountNumber) {
+
+        // 계좌 검증
+        accountValidator.validateAccountNumber(accountNumber);
+        AccountEntity account = accountValidator.validateAccountExists(accountNumber);
+
+        // TODO: 계좌 소유주 검증 필요
+
+
+        return transactionRepository.findByTransactionStatusAndSenderAccountOrReceiverAccount(
+                TransactionStatus.SUCCESS,
+                account,
+                account
+        );
     }
 
     // 출금 계좌 검증

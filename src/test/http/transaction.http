@@ -30,3 +30,6 @@ Content-Type: application/json
   "memo": "transfer API Test",
   "amount": 50000
 }
+
+### 거래 기록 불러오기
+GET http://localhost:8080/api/transactions/history/110123123456

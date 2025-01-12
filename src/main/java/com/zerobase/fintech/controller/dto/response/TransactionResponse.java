@@ -6,6 +6,9 @@ import com.zerobase.fintech.entity.TransactionEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class TransactionResponse {
 
@@ -73,6 +76,39 @@ public class TransactionResponse {
             response.setBalance(transaction.getSenderAccount().getBalance().toString());
 
             return response;
+        }
+    }
+
+    @Data
+    public static class HistoryResponse {
+
+        private String amount;
+        private String balance;
+        private String memo;
+
+        public static List<HistoryResponse> of(List<TransactionEntity> transactions, String targetAccountNumber) {
+            List<HistoryResponse> responses = new ArrayList<>();
+
+            for (TransactionEntity transaction : transactions) {
+                HistoryResponse response = new HistoryResponse();
+
+                response.amount = transaction.getAmount().toString();
+
+                // 요청된 계좌의 잔액만 선택
+                if (transaction.getSenderAccount() != null &&
+                        transaction.getSenderAccount().getAccountNumber().equals(targetAccountNumber)) {
+                    response.balance = transaction.getSnapshot().getSenderBalanceAfter().toString();
+                } else if (transaction.getReceiverAccount() != null &&
+                        transaction.getReceiverAccount().getAccountNumber().equals(targetAccountNumber)) {
+                    response.balance = transaction.getSnapshot().getReceiverBalanceAfter().toString();
+                }
+
+                response.memo = transaction.getMemo();
+
+                responses.add(response);
+            }
+
+            return responses;
         }
     }
 }
