@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -126,5 +128,20 @@ public class AccountService {
         account.setClosedAt(LocalDateTime.now());
 
         return account;
+    }
+
+    public List<AccountEntity> showAccountList(Long userId) {
+
+        // TODO: 인증 작업 필요
+
+
+        return accountRepository.findByUserIdAndAccountStatusIn(
+                userId,
+                Arrays.asList(
+                        AccountStatus.ACTIVE,
+                        AccountStatus.DORMANT,
+                        AccountStatus.SUSPENDED,
+                        AccountStatus.INACTIVE)
+        );
     }
 }

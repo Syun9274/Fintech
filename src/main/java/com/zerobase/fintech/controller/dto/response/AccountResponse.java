@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountResponse {
 
@@ -101,6 +103,32 @@ public class AccountResponse {
             response.accountStatus = account.getAccountStatus();
 
             return response;
+        }
+    }
+
+    @Data
+    public static class ListResponse {
+
+        private String accountNumber;
+        private String accountAlias;
+        private BigDecimal balance;
+        private AccountStatus accountStatus;
+
+        public static List<ListResponse> of(List<AccountEntity> accounts) {
+            List<ListResponse> responses = new ArrayList<>();
+
+            for (AccountEntity accountEntity : accounts) {
+                ListResponse response = new ListResponse();
+
+                response.accountNumber = accountEntity.getAccountNumber();
+                response.accountAlias = accountEntity.getAccountAlias();
+                response.balance = accountEntity.getBalance();
+                response.accountStatus = accountEntity.getAccountStatus();
+
+                responses.add(response);
+            }
+
+            return responses;
         }
     }
 }
