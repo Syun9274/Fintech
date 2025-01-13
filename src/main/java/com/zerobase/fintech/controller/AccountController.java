@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RequestMapping("api/accounts")
 @RestController
@@ -54,5 +56,13 @@ public class AccountController {
         AccountEntity account = accountService.deleteExternalAccount(accountNumber);
 
         return AccountResponse.DeleteExternalResponse.of(account);
+    }
+
+    @GetMapping("/list/{userId}")
+    public List<AccountResponse.ListResponse> getAccountListByUserId(
+            @PathVariable Long userId) {
+        List<AccountEntity> accountList = accountService.showAccountList(userId);
+
+        return AccountResponse.ListResponse.of(accountList);
     }
 }

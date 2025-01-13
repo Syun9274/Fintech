@@ -3,19 +3,17 @@ package com.zerobase.fintech.common.util;
 import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.repository.AccountRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @Component
 public class AccountValidator {
 
     private final AccountRepository accountRepository;
-
-    public AccountValidator(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
 
     // 계좌 번호 형식 확인
     public void validateAccountNumber(String accountNumber) {
@@ -38,9 +36,16 @@ public class AccountValidator {
     }
 
     // 계좌 해지 여부 확인
-    public void validateAccountNotClosed(AccountEntity account) {
+    public void validateAccountIsClosed(AccountEntity account) {
         if (Objects.equals(account.getAccountStatus(), AccountStatus.CLOSED)) {
             throw new IllegalArgumentException("Account is already closed");
+        }
+    }
+
+    // 계좌 활성화 여부 확인
+    public void validateAccountNotActive(AccountEntity account) {
+        if (!Objects.equals(account.getAccountStatus(), AccountStatus.ACTIVE)) {
+            throw new IllegalArgumentException("Account is not active");
         }
     }
 
@@ -48,6 +53,13 @@ public class AccountValidator {
     public void validateBalanceIsZero(AccountEntity account) {
         if (account.getBalance().compareTo(BigDecimal.ZERO) > 0) {
             throw new IllegalArgumentException("Account balance must be zero before closing the account");
+        }
+    }
+
+    // 계좌 출금 잔액 확인
+    public void validateBalanceIsMoreThanAmount(AccountEntity account, BigDecimal amount) {
+        if (account.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Account balance must be equal to or greater than the amount");
         }
     }
 }

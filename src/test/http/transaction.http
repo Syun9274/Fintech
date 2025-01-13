@@ -1,0 +1,35 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+### 입금
+POST http://localhost:8080/api/transactions/deposit
+Content-Type: application/json
+
+{
+  "accountNumber": "110123123456",
+  "amount": 50000
+}
+
+### 출금
+POST http://localhost:8080/api/transactions/withdrawal
+Content-Type: application/json
+
+{
+  "accountNumber": "110123123456",
+  "amount": 12000
+}
+
+### 송금
+POST http://localhost:8080/api/transactions/transfer
+Content-Type: application/json
+
+{
+  "accountNumber": "110123123456",
+  "receiverAccountNumber": "",
+  "memo": "transfer API Test",
+  "amount": 50000
+}
+
+### 거래 기록 불러오기
+GET http://localhost:8080/api/transactions/history/110123123456

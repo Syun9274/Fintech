@@ -2,105 +2,103 @@ package com.zerobase.fintech.controller.dto.response;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.entity.AccountEntity;
-import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountResponse {
 
-    @Data
-    public static class CreateResponse {
-
-        private String bankName;
-        private String accountAlias;
-        private String accountNumber;
-
+    public record CreateResponse(
+            String bankName,
+            String accountAlias,
+            String accountNumber
+    ) {
         public static CreateResponse of(AccountEntity account) {
-            CreateResponse response = new CreateResponse();
-
-            response.bankName = account.getBankName();
-            response.accountAlias = account.getAccountAlias();
-            response.accountNumber = account.getAccountNumber();
-
-            return response;
+            return new CreateResponse(
+                    account.getBankName(),
+                    account.getAccountAlias(),
+                    account.getAccountNumber()
+            );
         }
     }
 
-    @Data
-    public static class UpdateResponse {
-
-        private String beforeAccountNumber;
-        private String afterAccountNumber;
-
-        public static UpdateResponse of(String accountNumber,
-                                        AccountEntity account) {
-            UpdateResponse response = new UpdateResponse();
-
-            response.beforeAccountNumber = accountNumber;
-            response.afterAccountNumber = account.getAccountNumber();
-
-            return response;
+    public record UpdateResponse(
+            String beforeAccountNumber,
+            String afterAccountNumber) {
+        public static UpdateResponse of(String accountNumber, AccountEntity account) {
+            return new UpdateResponse(
+                    accountNumber,
+                    account.getAccountNumber()
+            );
         }
     }
 
-    @Data
-    public static class CloseResponse {
-
-        private String accountNumber;
-        private String accountAlias;
-        private AccountStatus accountStatus;
-        private LocalDateTime closeTime;
-
+    public record CloseResponse(
+            String accountNumber,
+            String accountAlias,
+            AccountStatus accountStatus,
+            LocalDateTime closeTime) {
         public static CloseResponse of(AccountEntity account) {
-            CloseResponse response = new CloseResponse();
-
-            response.accountNumber = account.getAccountNumber();
-            response.accountAlias = account.getAccountAlias();
-            response.accountStatus = account.getAccountStatus();
-            response.closeTime = account.getClosedAt();
-
-            return response;
+            return new CloseResponse(
+                    account.getAccountNumber(),
+                    account.getAccountAlias(),
+                    account.getAccountStatus(),
+                    account.getClosedAt()
+            );
         }
     }
 
-    @Data
-    public static class AddExternalResponse {
-
-        private String bankName;
-        private String accountAlias;
-        private String accountNumber;
-        private BigDecimal balance;
-
+    public record AddExternalResponse(
+            String bankName,
+            String accountAlias,
+            String accountNumber,
+            BigDecimal balance) {
         public static AddExternalResponse of(AccountEntity account) {
-            AddExternalResponse response = new AddExternalResponse();
-
-            response.bankName = account.getBankName();
-            response.accountAlias = account.getAccountAlias();
-            response.accountNumber = account.getAccountNumber();
-            response.balance = account.getBalance();
-
-            return response;
+            return new AddExternalResponse(
+                    account.getBankName(),
+                    account.getAccountAlias(),
+                    account.getAccountNumber(),
+                    account.getBalance()
+            );
         }
     }
 
-    @Data
-    public static class DeleteExternalResponse {
-
-        private String bankName;
-        private String accountAlias;
-        private String accountNumber;
-        private AccountStatus accountStatus;
-
+    public record DeleteExternalResponse(
+            String bankName,
+            String accountAlias,
+            String accountNumber,
+            AccountStatus accountStatus) {
         public static DeleteExternalResponse of(AccountEntity account) {
-            DeleteExternalResponse response = new DeleteExternalResponse();
+            return new DeleteExternalResponse(
+                    account.getBankName(),
+                    account.getAccountAlias(),
+                    account.getAccountNumber(),
+                    account.getAccountStatus()
+            );
+        }
+    }
 
-            response.bankName = account.getBankName();
-            response.accountAlias = account.getAccountAlias();
-            response.accountNumber = account.getAccountNumber();
-            response.accountStatus = account.getAccountStatus();
+    public record ListResponse(
+            String accountNumber,
+            String accountAlias,
+            BigDecimal balance,
+            AccountStatus accountStatus) {
+        public static List<ListResponse> of(List<AccountEntity> accounts) {
+            List<ListResponse> responses = new ArrayList<>();
 
-            return response;
+            for (AccountEntity accountEntity : accounts) {
+                responses.add(new ListResponse(
+                        accountEntity.getAccountNumber(),
+                        accountEntity.getAccountAlias(),
+                        accountEntity.getBalance(),
+                        accountEntity.getAccountStatus()
+                ));
+            }
+
+            return responses;
         }
     }
 }
+

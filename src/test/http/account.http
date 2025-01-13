@@ -36,3 +36,6 @@ Content-Type: application/json
 ### 계좌 삭제 (다른 은행 계좌)
 DELETE http://localhost:8080/api/accounts/external/110123123456
 Content-Type: application/json
+
+### 계좌 조회
+GET http://localhost:8080/api/accounts/list/{userId}
