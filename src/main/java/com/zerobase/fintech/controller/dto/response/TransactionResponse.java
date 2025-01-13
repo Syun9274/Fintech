@@ -3,8 +3,7 @@ package com.zerobase.fintech.controller.dto.response;
 import com.zerobase.fintech.common.enums.TransactionStatus;
 import com.zerobase.fintech.common.enums.TransactionType;
 import com.zerobase.fintech.entity.TransactionEntity;
-
-import java.util.List;
+import org.springframework.data.domain.Slice;
 
 public class TransactionResponse {
 
@@ -75,24 +74,26 @@ public class TransactionResponse {
             String balance,
             String memo
     ) {
-        public static List<HistoryResponse> of(List<TransactionEntity> transactions, String targetAccountNumber) {
-            return transactions.stream()
-                    .map(transaction -> {
-                        String balance = null;
-                        if (transaction.getSenderAccount() != null &&
-                                transaction.getSenderAccount().getAccountNumber().equals(targetAccountNumber)) {
-                            balance = transaction.getSnapshot().getSenderBalanceAfter().toString();
-                        } else if (transaction.getReceiverAccount() != null &&
-                                transaction.getReceiverAccount().getAccountNumber().equals(targetAccountNumber)) {
-                            balance = transaction.getSnapshot().getReceiverBalanceAfter().toString();
-                        }
-                        return new HistoryResponse(
-                                transaction.getAmount().toString(),
-                                balance,
-                                transaction.getMemo()
-                        );
-                    })
-                    .toList();
+        public static Slice<HistoryResponse> of(Slice<TransactionEntity> transactions, String targetAccountNumber) {
+            return transactions.map(transaction -> {
+                String balance = null;
+
+                // 요청된 계좌의 잔액만 선택
+                if (transaction.getSenderAccount() != null &&
+                        transaction.getSenderAccount().getAccountNumber().equals(targetAccountNumber)) {
+                    balance = transaction.getSnapshot().getSenderBalanceAfter().toString();
+                } else if (transaction.getReceiverAccount() != null &&
+                        transaction.getReceiverAccount().getAccountNumber().equals(targetAccountNumber)) {
+                    balance = transaction.getSnapshot().getReceiverBalanceAfter().toString();
+                }
+
+                // HistoryResponse 생성
+                return new HistoryResponse(
+                        transaction.getAmount().toString(),
+                        balance,
+                        transaction.getMemo()
+                );
+            });
         }
     }
 }

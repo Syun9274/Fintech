@@ -6,9 +6,10 @@ import com.zerobase.fintech.entity.TransactionEntity;
 import com.zerobase.fintech.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("api/transactions")
@@ -45,10 +46,11 @@ public class TransactionController {
     }
 
     @GetMapping("history/{accountNumber}")
-    public List<TransactionResponse.HistoryResponse> getTransactionsHistory(
-            @PathVariable String accountNumber
+    public Slice<TransactionResponse.HistoryResponse> getTransactionsHistory(
+            @PathVariable String accountNumber,
+            @PageableDefault(size = 10) Pageable pageable
     ) {
-        List<TransactionEntity> transactionHistories = transactionService.showTransactionHistory(accountNumber);
+        Slice<TransactionEntity> transactionHistories = transactionService.showTransactionHistory(accountNumber, pageable);
 
         return TransactionResponse.HistoryResponse.of(transactionHistories, accountNumber);
     }

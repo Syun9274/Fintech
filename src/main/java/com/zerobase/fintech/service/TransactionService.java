@@ -10,12 +10,13 @@ import com.zerobase.fintech.entity.AccountSnapshot;
 import com.zerobase.fintech.entity.TransactionEntity;
 import com.zerobase.fintech.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -142,7 +143,7 @@ public class TransactionService {
     }
 
     // 거래 기록 불러오기
-    public List<TransactionEntity> showTransactionHistory(String accountNumber) {
+    public Slice<TransactionEntity> showTransactionHistory(String accountNumber, Pageable pageable) {
 
         // 계좌 검증
         accountValidator.validateAccountNumber(accountNumber);
@@ -154,7 +155,8 @@ public class TransactionService {
         return transactionRepository.findByTransactionStatusAndSenderAccountOrReceiverAccount(
                 TransactionStatus.SUCCESS,
                 account,
-                account
+                account,
+                pageable
         );
     }
 
