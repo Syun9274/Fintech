@@ -38,7 +38,7 @@ public class TransactionService {
         try {
             // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
             // 계좌 검증
-            AccountEntity account = validateReceiverAccount(request.getAccountNumber());
+            AccountEntity account = validateDepositAccount(request.getAccountNumber());
 
             // 검증 후 거래 기록 저장
             transaction.setReceiverAccount(account);
@@ -73,7 +73,7 @@ public class TransactionService {
         try {
             // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
             // 계좌 검증
-            AccountEntity account = validateSenderAccount(request.getAccountNumber(), amount);
+            AccountEntity account = validateWithdrawalAccount(request.getAccountNumber(), amount);
 
             // 검증 후 거래 기록 저장
             transaction.setSenderAccount(account);
@@ -114,10 +114,10 @@ public class TransactionService {
         try {
             // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
             // 출금 계좌 검증
-            AccountEntity senderAccount = validateSenderAccount(request.getAccountNumber(), amount);
+            AccountEntity senderAccount = validateWithdrawalAccount(request.getAccountNumber(), amount);
 
             // 입금 계좌 검증
-            AccountEntity receiverAccount = validateReceiverAccount(request.getReceiverAccountNumber());
+            AccountEntity receiverAccount = validateDepositAccount(request.getReceiverAccountNumber());
 
             // 검증 후 거래 기록 저장
             transaction.setSenderAccount(senderAccount);
@@ -159,7 +159,7 @@ public class TransactionService {
     }
 
     // 출금 계좌 검증
-    private AccountEntity validateSenderAccount(String accountNumber, BigDecimal amount) {
+    private AccountEntity validateWithdrawalAccount(String accountNumber, BigDecimal amount) {
         accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateAccountNotActive(account);
@@ -170,7 +170,7 @@ public class TransactionService {
     }
 
     // 입금 계좌 검증
-    private AccountEntity validateReceiverAccount(String accountNumber) {
+    private AccountEntity validateDepositAccount(String accountNumber) {
         accountValidator.validateAccountNumber(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateAccountNotActive(account);
