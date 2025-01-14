@@ -24,3 +24,6 @@ spring:
   sql:
     init:
       mode: embedded
+
+  jwt:
+    secret: RmludGVjaFByb2plY3RKd3RUb2tlbkZvckFwcGxpY2F0aW9uRGV2QmFzZTY0

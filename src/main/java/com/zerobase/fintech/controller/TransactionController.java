@@ -12,7 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("api/transactions")
+@RequestMapping("/api/transactions")
 @RestController
 public class TransactionController {
 
@@ -45,7 +45,7 @@ public class TransactionController {
         return TransactionResponse.TransferResponse.of(transaction);
     }
 
-    @GetMapping("history/{accountNumber}")
+    @GetMapping("/history/{accountNumber}")
     public Slice<TransactionResponse.HistoryResponse> getTransactionsHistory(
             @PathVariable String accountNumber,
             @PageableDefault(size = 10) Pageable pageable

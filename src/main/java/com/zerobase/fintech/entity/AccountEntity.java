@@ -26,7 +26,7 @@ public class AccountEntity {
     private Long id;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Long userId;
 
     @NotNull

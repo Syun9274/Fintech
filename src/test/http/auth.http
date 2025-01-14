@@ -1,0 +1,19 @@
+### 회원 가입
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "nickname": "",
+  "phoneNumber": "01012345678",
+  "email": "abcd@gmail.com",
+  "password": "Abcd1234!"
+}
+
+### 로그인
+POST http://localhost:8080/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "abcd@gmail.com",
+  "password": "Abcd1234!"
+}
