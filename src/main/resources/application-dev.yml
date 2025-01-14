@@ -3,15 +3,10 @@ server:
 
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb
-    username: sa
+    url: jdbc:mysql://localhost:3306/fintech
+    username: root
     password:
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
@@ -20,10 +15,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-  sql:
-    init:
-      mode: embedded
 
   jwt:
     secret: RmludGVjaFByb2plY3RKd3RUb2tlbkZvckFwcGxpY2F0aW9uRGV2QmFzZTY0
