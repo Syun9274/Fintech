@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +23,8 @@ public class AccountController {
     @PostMapping
     public AccountResponse.CreateResponse createAccount(
             @RequestBody AccountRequest.CreateRequest request,
-            Authentication auth) {
+            Authentication auth
+    ) {
         AccountEntity account = accountService.createAccount(auth, request);
 
         return AccountResponse.CreateResponse.of(account);
@@ -33,8 +33,9 @@ public class AccountController {
     @PutMapping("/{accountNumber}")
     public AccountResponse.UpdateResponse updateAccount(
             @PathVariable String accountNumber,
-            @RequestBody AccountRequest.UpdateRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            @RequestBody AccountRequest.UpdateRequest request,
+            Authentication auth
+    ) {
         AccountEntity account = accountService.updateAccount(auth, accountNumber, request);
 
         return AccountResponse.UpdateResponse.of(accountNumber, account);
@@ -42,9 +43,9 @@ public class AccountController {
 
     @DeleteMapping("/{accountNumber}")
     public AccountResponse.CloseResponse closeAccount(
-            @PathVariable String accountNumber
+            @PathVariable String accountNumber,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AccountEntity account = accountService.closeAccount(auth, accountNumber);
 
         return AccountResponse.CloseResponse.of(account);
@@ -52,9 +53,9 @@ public class AccountController {
 
     @PostMapping("/external")
     public AccountResponse.AddExternalResponse addExternalAccount(
-            @Valid @RequestBody AccountRequest.AddRequest request
+            @Valid @RequestBody AccountRequest.AddRequest request,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AccountEntity account = accountService.addExternalAccount(auth, request);
 
         return AccountResponse.AddExternalResponse.of(account);
@@ -62,9 +63,9 @@ public class AccountController {
 
     @DeleteMapping("/external/{accountNumber}")
     public AccountResponse.DeleteExternalResponse deleteExternalAccount(
-            @PathVariable String accountNumber
+            @PathVariable String accountNumber,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AccountEntity account = accountService.deleteExternalAccount(auth, accountNumber);
 
         return AccountResponse.DeleteExternalResponse.of(account);
@@ -72,9 +73,9 @@ public class AccountController {
 
     @GetMapping("/list/{userId}")
     public List<AccountResponse.ListResponse> getAccountListByUserId(
-            @PathVariable Long userId
+            @PathVariable Long userId,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<AccountEntity> accountList = accountService.showAccountList(auth, userId);
 
         return AccountResponse.ListResponse.of(accountList);

@@ -25,6 +25,7 @@ public class UserValidator {
         }
     }
 
+    // 사용자 인증 후 userid 반환
     public Long findUserByAuthAndGetUserId(Authentication authentication) {
 
         if (authentication == null || !authentication.isAuthenticated()) {

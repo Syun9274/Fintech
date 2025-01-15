@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -136,8 +137,13 @@ public class AccountService {
 
     public List<AccountEntity> showAccountList(Authentication auth, Long userId) {
 
-        // TODO: 인증 작업 필요
-        userId = userValidator.findUserByAuthAndGetUserId(auth);
+        // userId 추출
+        Long authUserId = userValidator.findUserByAuthAndGetUserId(auth);
+
+        // 요청된 userId와 추출한 userId 일치 여부 검증
+        if (!Objects.equals(authUserId, userId)) {
+            throw new IllegalArgumentException("Wrong user id");
+        }
 
         return accountRepository.findByUserIdAndAccountStatusIn(
                 userId,
