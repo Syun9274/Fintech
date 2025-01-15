@@ -6,6 +6,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,13 +22,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class TokenProvider {
 
     private final UserService userService;
 
-    private static final String KEY_ROLES = "roles";
+    private static final String KEY_ROLE = "role";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 3; // 3 hours
 
     @Value("${spring.jwt.secret}")
@@ -51,7 +53,7 @@ public class TokenProvider {
 
         // 사용자 정보 추가
         var claims = Jwts.claims().setSubject(email);
-        claims.put(KEY_ROLES, role);
+        claims.put(KEY_ROLE, role);
 
         // 토큰 만료 시간 설정
         var now = new Date();
@@ -75,8 +77,8 @@ public class TokenProvider {
      */
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userService.loadUserByUsername(getUsername(token));
-
         List<GrantedAuthority> authorities = getAuthorities(token);
+
         return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 
@@ -100,14 +102,19 @@ public class TokenProvider {
 
         // Claims에서 roles 추출
         Claims claims = parseClaims(token);
-        Object rolesObject = claims.get(KEY_ROLES);
+        Object rolesObject = claims.get(KEY_ROLE);
 
         List<String> roles;
+
         if (rolesObject instanceof List) {
+            // rolesObject가 List인 경우
             roles = ((List<?>) rolesObject).stream()
                     .filter(item -> item instanceof String)
                     .map(item -> (String) item)
                     .toList();
+        } else if (rolesObject instanceof String) {
+            // rolesObject가 단일 문자열인 경우
+            roles = List.of((String) rolesObject);
         } else {
             roles = new ArrayList<>();
         }

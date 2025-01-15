@@ -146,7 +146,7 @@ public class TransactionService {
     public Slice<TransactionEntity> showTransactionHistory(String accountNumber, Pageable pageable) {
 
         // 계좌 검증
-        accountValidator.validateAccountNumber(accountNumber);
+        accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
 
         // TODO: 계좌 소유주 검증 필요
@@ -162,7 +162,7 @@ public class TransactionService {
 
     // 출금 계좌 검증
     private AccountEntity validateWithdrawalAccount(String accountNumber, BigDecimal amount) {
-        accountValidator.validateAccountNumber(accountNumber);
+        accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateAccountNotActive(account);
         accountValidator.validateBalanceIsMoreThanAmount(account, amount);
@@ -173,7 +173,7 @@ public class TransactionService {
 
     // 입금 계좌 검증
     private AccountEntity validateDepositAccount(String accountNumber) {
-        accountValidator.validateAccountNumber(accountNumber);
+        accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateAccountNotActive(account);
 

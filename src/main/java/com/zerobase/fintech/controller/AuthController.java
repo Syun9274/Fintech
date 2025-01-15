@@ -23,7 +23,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public UserResponse.SignUpResponse register(
-            @Valid @RequestBody UserRequest.SignUpRequest request) {
+            @Valid @RequestBody UserRequest.SignUpRequest request
+    ) {
         UserEntity user = userService.register(request);
 
         return UserResponse.SignUpResponse.of(user);
@@ -31,7 +32,8 @@ public class AuthController {
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(
-            @Valid @RequestBody UserRequest.SignInRequest request) {
+            @Valid @RequestBody UserRequest.SignInRequest request
+    ) {
         var user = userService.authenticate(request);
         var token = tokenProvider.generateToken(user.getEmail(), user.getRole());
 

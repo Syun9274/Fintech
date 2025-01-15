@@ -6,10 +6,14 @@ import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasAnyRole('USER')")
 @RequiredArgsConstructor
 @RequestMapping("/api/accounts")
 @RestController
@@ -19,8 +23,9 @@ public class AccountController {
 
     @PostMapping
     public AccountResponse.CreateResponse createAccount(
-            @RequestBody AccountRequest.CreateRequest request) {
-        AccountEntity account = accountService.createAccount(request);
+            @RequestBody AccountRequest.CreateRequest request,
+            Authentication auth) {
+        AccountEntity account = accountService.createAccount(auth, request);
 
         return AccountResponse.CreateResponse.of(account);
     }
@@ -29,39 +34,48 @@ public class AccountController {
     public AccountResponse.UpdateResponse updateAccount(
             @PathVariable String accountNumber,
             @RequestBody AccountRequest.UpdateRequest request) {
-        AccountEntity account = accountService.updateAccount(accountNumber, request);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        AccountEntity account = accountService.updateAccount(auth, accountNumber, request);
 
         return AccountResponse.UpdateResponse.of(accountNumber, account);
     }
 
     @DeleteMapping("/{accountNumber}")
     public AccountResponse.CloseResponse closeAccount(
-            @PathVariable String accountNumber) {
-        AccountEntity account = accountService.closeAccount(accountNumber);
+            @PathVariable String accountNumber
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        AccountEntity account = accountService.closeAccount(auth, accountNumber);
 
         return AccountResponse.CloseResponse.of(account);
     }
 
     @PostMapping("/external")
     public AccountResponse.AddExternalResponse addExternalAccount(
-            @Valid @RequestBody AccountRequest.AddRequest request) {
-        AccountEntity account = accountService.addExternalAccount(request);
+            @Valid @RequestBody AccountRequest.AddRequest request
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        AccountEntity account = accountService.addExternalAccount(auth, request);
 
         return AccountResponse.AddExternalResponse.of(account);
     }
 
     @DeleteMapping("/external/{accountNumber}")
     public AccountResponse.DeleteExternalResponse deleteExternalAccount(
-            @PathVariable String accountNumber) {
-        AccountEntity account = accountService.deleteExternalAccount(accountNumber);
+            @PathVariable String accountNumber
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        AccountEntity account = accountService.deleteExternalAccount(auth, accountNumber);
 
         return AccountResponse.DeleteExternalResponse.of(account);
     }
 
     @GetMapping("/list/{userId}")
     public List<AccountResponse.ListResponse> getAccountListByUserId(
-            @PathVariable Long userId) {
-        List<AccountEntity> accountList = accountService.showAccountList(userId);
+            @PathVariable Long userId
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<AccountEntity> accountList = accountService.showAccountList(auth, userId);
 
         return AccountResponse.ListResponse.of(accountList);
     }

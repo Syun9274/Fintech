@@ -22,27 +22,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
+        logger.info("Starting JWT authentication filter");
+
+        // Extract token
         String token = resolveToken(request);
 
-        if (token != null && token.startsWith(BEARER_PREFIX)) {
-            Authentication auth = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        if (token != null) {
+            logger.info("JWT Token extracted");
+
+            // Validate token
+            if (tokenProvider.validateToken(token)) {
+                logger.info("JWT Token is valid");
+
+                // Retrieve Authentication object
+                Authentication auth = tokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                logger.info("Authentication set for user");
+            } else {
+                logger.warn("Invalid or expired JWT token");
+            }
+        } else {
+            logger.warn("No JWT token found in the request");
         }
 
+        // Continue with the filter chain
         filterChain.doFilter(request, response);
+
+        logger.info("JWT authentication filter processing completed");
     }
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        logger.info("Authorization Header");
 
         if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length());
+            String token = bearerToken.substring(BEARER_PREFIX.length());
+            logger.info("Extracted Bearer Token");
+            return token;
         }
 
+        logger.info("No Bearer Token found in the Authorization header");
         return null;
     }
 }

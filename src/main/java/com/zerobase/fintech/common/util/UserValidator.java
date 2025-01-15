@@ -1,7 +1,10 @@
 package com.zerobase.fintech.common.util;
 
+import com.zerobase.fintech.entity.UserEntity;
 import com.zerobase.fintech.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -21,4 +24,20 @@ public class UserValidator {
             );
         }
     }
+
+    public Long findUserByAuthAndGetUserId(Authentication authentication) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated");
+        }
+
+        String email = authentication.getName();
+
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return user.getId();
+    }
+
+
 }

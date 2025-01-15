@@ -16,7 +16,7 @@ public class AccountValidator {
     private final AccountRepository accountRepository;
 
     // 계좌 번호 형식 확인
-    public void validateAccountNumber(String accountNumber) {
+    public void validateAccountNumberFormat(String accountNumber) {
         if (!accountNumber.matches("\\d{10,20}")) {
             throw new IllegalArgumentException("Account number must be between 10 and 20 digits");
         }
@@ -60,6 +60,13 @@ public class AccountValidator {
     public void validateBalanceIsMoreThanAmount(AccountEntity account, BigDecimal amount) {
         if (account.getBalance().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Account balance must be equal to or greater than the amount");
+        }
+    }
+
+    // 계좌 소유주 일치 확인
+    public void validateAccountUserId(AccountEntity account, Long userId) {
+        if (!Objects.equals(account.getUserId(), userId)) {
+            throw new IllegalArgumentException("The user does not own the account or has insufficient permissions.");
         }
     }
 }
