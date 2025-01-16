@@ -1,5 +1,6 @@
 package com.zerobase.fintech.common.util;
 
+import com.zerobase.fintech.common.enums.UserStatus;
 import com.zerobase.fintech.entity.UserEntity;
 import com.zerobase.fintech.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,13 @@ public class UserValidator {
         return user.getId();
     }
 
+    // 계정 상태 검증
+    public void userStatusIsActive(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        if (user.getStatus() == UserStatus.DEACTIVATED) {
+            throw new IllegalArgumentException("User is not active");
+        }
+    }
 }

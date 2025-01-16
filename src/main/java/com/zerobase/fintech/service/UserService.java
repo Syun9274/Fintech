@@ -1,11 +1,13 @@
 package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.UserRole;
+import com.zerobase.fintech.common.enums.UserStatus;
 import com.zerobase.fintech.common.util.UserValidator;
 import com.zerobase.fintech.controller.dto.request.UserRequest;
 import com.zerobase.fintech.entity.UserEntity;
 import com.zerobase.fintech.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,6 +46,7 @@ public class UserService implements UserDetailsService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(nickname)
                 .phoneNumber(phoneNumber)
+                .status(UserStatus.ACTIVE)
                 .role(UserRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .build());
@@ -58,5 +61,15 @@ public class UserService implements UserDetailsService {
         }
 
         return user;
+    }
+
+    @Transactional
+    public void deactivateUser(Authentication auth) {
+        Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        user.setStatus(UserStatus.DEACTIVATED);
     }
 }

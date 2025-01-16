@@ -30,8 +30,9 @@ public class AccountService {
     @Transactional
     public AccountEntity createAccount(Authentication auth, AccountRequest.CreateRequest request) {
 
-        // userId 추출
+        // userId 추출 및 상태 검증
         Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        userValidator.userStatusIsActive(userId);
 
         // 설정한 alias 없다면 null
         String accountAlias = request.getAccountAlias();
@@ -97,8 +98,9 @@ public class AccountService {
     @Transactional
     public AccountEntity addExternalAccount(Authentication auth, AccountRequest.AddRequest request) {
 
-        // userId 추출
+        // userId 추출 및 상태 검증
         Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        userValidator.userStatusIsActive(userId);
 
         // 입력 받은 계좌 정보
         String bankName = request.getBankName();
@@ -159,5 +161,6 @@ public class AccountService {
     private void validateAccountAndUserIdMatch(Authentication auth, AccountEntity account) {
         Long userId = userValidator.findUserByAuthAndGetUserId(auth);
         accountValidator.validateAccountUserId(account, userId);
+        userValidator.userStatusIsActive(userId);
     }
 }

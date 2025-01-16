@@ -233,5 +233,6 @@ public class TransactionService {
     private void validateAccountAndUserIdMatch(Authentication auth, AccountEntity account) {
         Long userId = userValidator.findUserByAuthAndGetUserId(auth);
         accountValidator.validateAccountUserId(account, userId);
+        userValidator.userStatusIsActive(userId);
     }
 }

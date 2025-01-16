@@ -8,10 +8,8 @@ import com.zerobase.fintech.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -38,5 +36,14 @@ public class AuthController {
         var token = tokenProvider.generateToken(user.getEmail(), user.getRole());
 
         return ResponseEntity.ok(token);
+    }
+
+    @DeleteMapping("/deactivate")
+    public ResponseEntity<?> deactivateUser(
+            Authentication auth
+    ) {
+        userService.deactivateUser(auth);
+
+        return ResponseEntity.ok("Deactivated Done");
     }
 }
