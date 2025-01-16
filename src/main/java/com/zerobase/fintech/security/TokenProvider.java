@@ -2,12 +2,12 @@ package com.zerobase.fintech.security;
 
 import com.zerobase.fintech.common.enums.UserRole;
 import com.zerobase.fintech.service.UserService;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,13 +32,21 @@ public class TokenProvider {
     private static final String KEY_ROLE = "role";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 3; // 3 hours
 
-    @Value("${spring.jwt.secret}")
-    private String secretKey;
-
     private Key key;
 
     @PostConstruct
     public void init() {
+        Dotenv dotenv = Dotenv.load();
+        String secretKey = dotenv.get("JWT_SECRET");
+
+        if (secretKey == null || secretKey.isEmpty()) {
+            throw new IllegalStateException("JWT_SECRET is not defined in the environment variables.");
+        }
+
+        if (secretKey.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException("JWT_SECRET must be at least 32 bytes long.");
+        }
+
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
