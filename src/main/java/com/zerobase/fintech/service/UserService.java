@@ -2,6 +2,7 @@ package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.UserRole;
 import com.zerobase.fintech.common.enums.UserStatus;
+import com.zerobase.fintech.common.util.AccountValidator;
 import com.zerobase.fintech.common.util.UserValidator;
 import com.zerobase.fintech.controller.dto.request.UserRequest;
 import com.zerobase.fintech.entity.UserEntity;
@@ -22,8 +23,9 @@ import java.time.LocalDateTime;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final UserValidator userValidator;
     private final PasswordEncoder passwordEncoder;
+    private final AccountValidator accountValidator;
+    private final UserValidator userValidator;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -65,10 +67,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void deactivateUser(Authentication auth) {
-        Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        UserEntity user = userValidator.findUserByAuth(auth);
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        accountValidator.validateAccountIsAllClosed(user.getId());
 
         user.setStatus(UserStatus.DEACTIVATED);
     }

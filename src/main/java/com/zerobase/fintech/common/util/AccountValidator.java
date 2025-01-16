@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -39,6 +40,25 @@ public class AccountValidator {
     public void validateAccountIsClosed(AccountEntity account) {
         if (Objects.equals(account.getAccountStatus(), AccountStatus.CLOSED)) {
             throw new IllegalArgumentException("Account is already closed");
+        }
+    }
+
+    public void validateAccountIsAllClosed(Long userId) {
+        List<AccountEntity> accounts = accountRepository.findByUserIdAndBankName(userId, "ZB_Bank");
+
+        List<AccountEntity> zbBankAccounts = accounts.stream()
+                .filter(account -> "ZB_Bank".equals(account.getBankName()))
+                .toList();
+
+        if (zbBankAccounts.isEmpty()) {
+            return;
+        }
+
+        boolean allClosed = zbBankAccounts.stream()
+                .allMatch(account -> account.getAccountStatus() == AccountStatus.CLOSED);
+
+        if (!allClosed) {
+            throw new IllegalArgumentException("Not all ZB_Bank accounts are closed");
         }
     }
 

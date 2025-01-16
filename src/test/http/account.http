@@ -43,5 +43,5 @@ Content-Type: application/json
 Authorization: Bearer
 
 ### 계좌 조회
-GET http://localhost:8080/api/accounts/list/2
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkQGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3MzY5NzA3NjIsImV4cCI6MTczNjk4MTU2Mn0.1wyUtAPtzrOfsyOgxyk4aAgzrcVlig6r2-Qs8_WgtrM
+GET http://localhost:8080/api/accounts/list/{userId}
+Authorization: Bearer

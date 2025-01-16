@@ -26,6 +26,17 @@ public class UserValidator {
         }
     }
 
+    // 사용자 인증 후 userEntity 반환
+    public UserEntity findUserByAuth(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated");
+        }
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
     // 사용자 인증 후 userid 반환
     public Long findUserByAuthAndGetUserId(Authentication authentication) {
 
