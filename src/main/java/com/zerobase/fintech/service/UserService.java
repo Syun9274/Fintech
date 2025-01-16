@@ -72,5 +72,6 @@ public class UserService implements UserDetailsService {
         accountValidator.validateAccountIsAllClosed(user.getId());
 
         user.setStatus(UserStatus.DEACTIVATED);
+        user.setDeletedAt(LocalDateTime.now());
     }
 }
