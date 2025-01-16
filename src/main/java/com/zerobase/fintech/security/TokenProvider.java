@@ -61,7 +61,7 @@ public class TokenProvider {
 
         // 토큰 생성
         return Jwts.builder()
-                .setHeaderParam("typ", "JWT")        // 토큰 타입
+                .setHeaderParam("typ", "JWT")           // 토큰 타입
                 .setClaims(claims)                          // 사용자 정보
                 .setIssuedAt(now)                           // 발행 시간
                 .setExpiration(expirationDate)              // 만료 시간

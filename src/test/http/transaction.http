@@ -5,6 +5,7 @@ GET https://examples.http-client.intellij.net/get
 ### 입금
 POST http://localhost:8080/api/transactions/deposit
 Content-Type: application/json
+Authorization: Bearer
 
 {
   "accountNumber": "110123123456",
@@ -14,6 +15,7 @@ Content-Type: application/json
 ### 출금
 POST http://localhost:8080/api/transactions/withdrawal
 Content-Type: application/json
+Authorization: Bearer
 
 {
   "accountNumber": "110123123456",
@@ -23,6 +25,7 @@ Content-Type: application/json
 ### 송금
 POST http://localhost:8080/api/transactions/transfer
 Content-Type: application/json
+Authorization: Bearer
 
 {
   "accountNumber": "110123123456",
@@ -33,3 +36,4 @@ Content-Type: application/json
 
 ### 거래 기록 불러오기
 GET http://localhost:8080/api/transactions/history/110123123456
+Authorization: Bearer

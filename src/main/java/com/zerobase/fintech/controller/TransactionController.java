@@ -11,7 +11,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("hasAnyRole('USER')")
@@ -24,30 +23,30 @@ public class TransactionController {
 
     @PostMapping("/deposit")
     public TransactionResponse.DepositResponse deposit(
-            @Valid @RequestBody TransactionRequest request
+            @Valid @RequestBody TransactionRequest request,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        TransactionEntity transaction = transactionService.deposit(request);
+        TransactionEntity transaction = transactionService.deposit(auth, request);
 
         return TransactionResponse.DepositResponse.of(transaction);
     }
 
     @PostMapping("/withdrawal")
     public TransactionResponse.WithdrawalResponse withdrawal(
-            @Valid @RequestBody TransactionRequest request
+            @Valid @RequestBody TransactionRequest request,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        TransactionEntity transaction = transactionService.withdrawal(request);
+        TransactionEntity transaction = transactionService.withdrawal(auth, request);
 
         return TransactionResponse.WithdrawalResponse.of(transaction);
     }
 
     @PostMapping("/transfer")
     public TransactionResponse.TransferResponse transfer(
-            @Valid @RequestBody TransactionRequest.TransferRequest request
+            @Valid @RequestBody TransactionRequest.TransferRequest request,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        TransactionEntity transaction = transactionService.transfer(request);
+        TransactionEntity transaction = transactionService.transfer(auth, request);
 
         return TransactionResponse.TransferResponse.of(transaction);
     }
@@ -55,10 +54,11 @@ public class TransactionController {
     @GetMapping("/history/{accountNumber}")
     public Slice<TransactionResponse.HistoryResponse> getTransactionsHistory(
             @PathVariable String accountNumber,
-            @PageableDefault(size = 10) Pageable pageable
+            @PageableDefault(size = 10) Pageable pageable,
+            Authentication auth
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Slice<TransactionEntity> transactionHistories = transactionService.showTransactionHistory(accountNumber, pageable);
+        Slice<TransactionEntity> transactionHistories =
+                transactionService.showTransactionHistory(auth, accountNumber, pageable);
 
         return TransactionResponse.HistoryResponse.of(transactionHistories, accountNumber);
     }

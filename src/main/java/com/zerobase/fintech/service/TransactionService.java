@@ -4,6 +4,7 @@ import com.zerobase.fintech.common.enums.TransactionStatus;
 import com.zerobase.fintech.common.enums.TransactionType;
 import com.zerobase.fintech.common.util.AccountValidator;
 import com.zerobase.fintech.common.util.TransactionValidator;
+import com.zerobase.fintech.common.util.UserValidator;
 import com.zerobase.fintech.controller.dto.request.TransactionRequest;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.entity.AccountSnapshot;
@@ -12,6 +13,7 @@ import com.zerobase.fintech.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +27,10 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountValidator accountValidator;
     private final TransactionValidator transactionValidator;
+    private final UserValidator userValidator;
 
     @Transactional
-    public TransactionEntity deposit(TransactionRequest request) {
+    public TransactionEntity deposit(Authentication auth, TransactionRequest request) {
 
         // 거래 예정 금액
         BigDecimal amount = request.getAmount();
@@ -37,9 +40,11 @@ public class TransactionService {
                 "입금");
 
         try {
-            // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
             // 계좌 검증
             AccountEntity account = validateDepositAccount(request.getAccountNumber());
+
+            // 계좌 소유주 검증
+            validateAccountAndUserIdMatch(auth, account);
 
             // 검증 후 거래 기록 저장
             transaction.setReceiverAccount(account);
@@ -62,7 +67,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionEntity withdrawal(TransactionRequest request) {
+    public TransactionEntity withdrawal(Authentication auth, TransactionRequest request) {
 
         // 거래 예정 금액
         BigDecimal amount = request.getAmount();
@@ -72,9 +77,11 @@ public class TransactionService {
                 "출금");
 
         try {
-            // TODO: 인증 기능 구현 후 계좌 소유주 검증 단계 추가
             // 계좌 검증
             AccountEntity account = validateWithdrawalAccount(request.getAccountNumber(), amount);
+
+            // 계좌 소유주 검증
+            validateAccountAndUserIdMatch(auth, account);
 
             // 검증 후 거래 기록 저장
             transaction.setSenderAccount(account);
@@ -97,9 +104,9 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionEntity transfer(TransactionRequest.TransferRequest request) {
+    public TransactionEntity transfer(Authentication auth, TransactionRequest.TransferRequest request) {
 
-        // 계좌 불일치 검증
+        // sender, receiver 불일치 검증
         transactionValidator.validateTransactionAccountsAreDifferent(
                 request.getAccountNumber(),
                 request.getReceiverAccountNumber());
@@ -119,6 +126,9 @@ public class TransactionService {
 
             // 입금 계좌 검증
             AccountEntity receiverAccount = validateDepositAccount(request.getReceiverAccountNumber());
+
+            // 계좌 소유주 검증
+            validateAccountAndUserIdMatch(auth, senderAccount);
 
             // 검증 후 거래 기록 저장
             transaction.setSenderAccount(senderAccount);
@@ -143,14 +153,14 @@ public class TransactionService {
     }
 
     // 거래 기록 불러오기
-    public Slice<TransactionEntity> showTransactionHistory(String accountNumber, Pageable pageable) {
+    public Slice<TransactionEntity> showTransactionHistory(Authentication auth, String accountNumber, Pageable pageable) {
 
         // 계좌 검증
         accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
 
-        // TODO: 계좌 소유주 검증 필요
-
+        // 계좌 소유주 검증
+        validateAccountAndUserIdMatch(auth, account);
 
         return transactionRepository.findByTransactionStatusAndSenderAccountOrReceiverAccount(
                 TransactionStatus.SUCCESS,
@@ -217,5 +227,11 @@ public class TransactionService {
         transaction.setTransactionClosedAt(LocalDateTime.now());
 
         return transactionRepository.save(transaction);
+    }
+
+    // 계좌 소유주 검증
+    private void validateAccountAndUserIdMatch(Authentication auth, AccountEntity account) {
+        Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        accountValidator.validateAccountUserId(account, userId);
     }
 }
