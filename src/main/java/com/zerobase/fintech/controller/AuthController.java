@@ -1,5 +1,6 @@
 package com.zerobase.fintech.controller;
 
+import com.zerobase.fintech.common.enums.UserRole;
 import com.zerobase.fintech.controller.dto.request.UserRequest;
 import com.zerobase.fintech.controller.dto.response.UserResponse;
 import com.zerobase.fintech.entity.UserEntity;
@@ -23,7 +24,7 @@ public class AuthController {
     public UserResponse.SignUpResponse register(
             @Valid @RequestBody UserRequest.SignUpRequest request
     ) {
-        UserEntity user = userService.register(request);
+        UserEntity user = userService.register(request, UserRole.ROLE_USER);
 
         return UserResponse.SignUpResponse.of(user);
     }

@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserEntity register(UserRequest.SignUpRequest request) {
+    public UserEntity register(UserRequest.SignUpRequest request, UserRole userRole) {
 
         String email = request.getEmail();
         String phoneNumber = request.getPhoneNumber();
@@ -48,8 +48,8 @@ public class UserService implements UserDetailsService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(nickname)
                 .phoneNumber(phoneNumber)
-                .status(UserStatus.ACTIVE)
-                .role(UserRole.ROLE_USER)
+                .userStatus(UserStatus.ACTIVE)
+                .role(userRole)
                 .createdAt(LocalDateTime.now())
                 .build());
     }
@@ -71,7 +71,7 @@ public class UserService implements UserDetailsService {
 
         accountValidator.validateAccountIsAllClosed(user.getId());
 
-        user.setStatus(UserStatus.DEACTIVATED);
+        user.setUserStatus(UserStatus.DEACTIVATED);
         user.setDeletedAt(LocalDateTime.now());
     }
 }

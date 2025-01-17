@@ -54,7 +54,7 @@ public class UserEntity implements UserDetails {
     @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private UserStatus userStatus;
 
     @NotNull
     @Column(nullable = false)
