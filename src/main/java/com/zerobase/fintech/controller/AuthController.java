@@ -20,11 +20,23 @@ public class AuthController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
 
+    // 일반 사용자
     @PostMapping("/register")
     public UserResponse.SignUpResponse register(
             @Valid @RequestBody UserRequest.SignUpRequest request
     ) {
         UserEntity user = userService.register(request, UserRole.ROLE_USER);
+
+        return UserResponse.SignUpResponse.of(user);
+    }
+
+    // 관리자
+    // 관계자만 접근 가능하도록 특수한 URL 사용
+    @PostMapping("/YWRtaW4K")
+    public UserResponse.SignUpResponse adminRegister(
+            @Valid @RequestBody UserRequest.SignUpRequest request
+    ) {
+        UserEntity user = userService.register(request, UserRole.ROLE_ADMIN);
 
         return UserResponse.SignUpResponse.of(user);
     }
