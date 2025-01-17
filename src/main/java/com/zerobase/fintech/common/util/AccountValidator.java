@@ -45,7 +45,7 @@ public class AccountValidator {
     }
 
     public void validateAccountIsAllClosed(Long userId) {
-        List<AccountEntity> accounts = accountRepository.findByUserIdAndBankName(userId, "ZB_Bank");
+        List<AccountEntity> accounts = accountRepository.findByUserIdAndBankName(userId, BankName.ZB_Bank.getName());
 
         List<AccountEntity> zbBankAccounts = accounts.stream()
                 .filter(account -> BankName.ZB_Bank.getName().equals(account.getBankName()))
