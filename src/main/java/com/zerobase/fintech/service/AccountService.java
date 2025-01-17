@@ -1,6 +1,7 @@
 package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
+import com.zerobase.fintech.common.enums.BankName;
 import com.zerobase.fintech.common.util.AccountNumberGenerator;
 import com.zerobase.fintech.common.util.AccountValidator;
 import com.zerobase.fintech.common.util.UserValidator;
@@ -44,7 +45,7 @@ public class AccountService {
         return accountRepository.save(AccountEntity.builder()
                 .userId(userId) // 인증 기능 구현 전까지 '1'로 고정 (기능 구현 후 수정 예정)
                 .accountNumber(accountNumber)
-                .bankName("ZB_Bank")
+                .bankName(BankName.ZB_Bank.getName())
                 .accountAlias(accountAlias)
                 .balance(BigDecimal.valueOf(0))
                 .accountStatus(AccountStatus.ACTIVE)

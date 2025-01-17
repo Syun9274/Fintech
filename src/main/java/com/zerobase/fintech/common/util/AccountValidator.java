@@ -1,6 +1,7 @@
 package com.zerobase.fintech.common.util;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
+import com.zerobase.fintech.common.enums.BankName;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class AccountValidator {
 
     // 은행 명 확인
     public void validateBankName(AccountEntity account) {
-        if (!Objects.equals(account.getBankName(), "ZB_Bank")) {
+        if (!Objects.equals(account.getBankName(), BankName.ZB_Bank.getName())) {
             throw new IllegalArgumentException("Account is not ZB_Bank");
         }
     }
@@ -47,7 +48,7 @@ public class AccountValidator {
         List<AccountEntity> accounts = accountRepository.findByUserIdAndBankName(userId, "ZB_Bank");
 
         List<AccountEntity> zbBankAccounts = accounts.stream()
-                .filter(account -> "ZB_Bank".equals(account.getBankName()))
+                .filter(account -> BankName.ZB_Bank.getName().equals(account.getBankName()))
                 .toList();
 
         if (zbBankAccounts.isEmpty()) {
