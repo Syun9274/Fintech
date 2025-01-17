@@ -5,6 +5,7 @@ GET https://examples.http-client.intellij.net/get
 ### 계좌 생성
 POST http://localhost:8080/api/accounts
 Content-Type: application/json
+Authorization: Bearer
 
 {
   "accountAlias": "Enter accountAlias here"
@@ -13,6 +14,7 @@ Content-Type: application/json
 ### 계좌 재발급
 PUT http://localhost:8080/api/accounts/{accountNumber}
 Content-Type: application/json
+Authorization: Bearer
 
 {
   "accountAlias": "Enter accountAlias here"
@@ -21,10 +23,12 @@ Content-Type: application/json
 ### 계좌 해지
 DELETE http://localhost:8080/api/accounts/{accountNumber}
 Content-Type: application/json
+Authorization: Bearer
 
 ### 계좌 추가 (다른 은행 계좌)
 POST http://localhost:8080/api/accounts/external
 Content-Type: application/json
+Authorization: Bearer
 
 {
   "bankName": "은행 명",
@@ -36,6 +40,8 @@ Content-Type: application/json
 ### 계좌 삭제 (다른 은행 계좌)
 DELETE http://localhost:8080/api/accounts/external/110123123456
 Content-Type: application/json
+Authorization: Bearer
 
 ### 계좌 조회
 GET http://localhost:8080/api/accounts/list/{userId}
+Authorization: Bearer

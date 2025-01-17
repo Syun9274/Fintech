@@ -1,12 +1,15 @@
 package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
+import com.zerobase.fintech.common.enums.BankName;
 import com.zerobase.fintech.common.util.AccountNumberGenerator;
 import com.zerobase.fintech.common.util.AccountValidator;
+import com.zerobase.fintech.common.util.UserValidator;
 import com.zerobase.fintech.controller.dto.request.AccountRequest;
 import com.zerobase.fintech.entity.AccountEntity;
 import com.zerobase.fintech.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -22,11 +26,14 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator accountNumberGenerator;
     private final AccountValidator accountValidator;
+    private final UserValidator userValidator;
 
     @Transactional
-    public AccountEntity createAccount(AccountRequest.CreateRequest request) {
+    public AccountEntity createAccount(Authentication auth, AccountRequest.CreateRequest request) {
 
-        // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
+        // userId 추출 및 상태 검증
+        Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        userValidator.userStatusIsActive(userId);
 
         // 설정한 alias 없다면 null
         String accountAlias = request.getAccountAlias();
@@ -36,9 +43,9 @@ public class AccountService {
 
         // 계좌 번호를 비롯한 정보를 AccountEntity 저장
         return accountRepository.save(AccountEntity.builder()
-                .userId(1L) // 인증 기능 구현 전까지 '1'로 고정 (기능 구현 후 수정 예정)
+                .userId(userId) // 인증 기능 구현 전까지 '1'로 고정 (기능 구현 후 수정 예정)
                 .accountNumber(accountNumber)
-                .bankName("ZB_Bank")
+                .bankName(BankName.ZB_Bank.getName())
                 .accountAlias(accountAlias)
                 .balance(BigDecimal.valueOf(0))
                 .accountStatus(AccountStatus.ACTIVE)
@@ -47,16 +54,16 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity updateAccount(String accountNumber, AccountRequest.UpdateRequest request) {
+    public AccountEntity updateAccount(Authentication auth, String accountNumber, AccountRequest.UpdateRequest request) {
 
         // 계좌 유효성 검증
-        accountValidator.validateAccountNumber(accountNumber);
+        accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateBankName(account);
         accountValidator.validateAccountIsClosed(account);
 
-        // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
-
+        // 계좌 소유주 검증
+        validateAccountAndUserIdMatch(auth, account);
 
         // 새로운 계좌 번호 생성
         String newAccountNumber = accountNumberGenerator.generateAccountNumber();
@@ -70,17 +77,17 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity closeAccount(String accountNumber) {
+    public AccountEntity closeAccount(Authentication auth, String accountNumber) {
 
         // 계좌 유효성 검증
-        accountValidator.validateAccountNumber(accountNumber);
+        accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
         accountValidator.validateBankName(account);
         accountValidator.validateAccountIsClosed(account);
         accountValidator.validateBalanceIsZero(account);
 
-        // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
-
+        // 계좌 소유주 검증
+        validateAccountAndUserIdMatch(auth, account);
 
         // 계좌 해지 처리
         account.setAccountStatus(AccountStatus.CLOSED);
@@ -90,10 +97,11 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity addExternalAccount(AccountRequest.AddRequest request) {
+    public AccountEntity addExternalAccount(Authentication auth, AccountRequest.AddRequest request) {
 
-        // TODO: 나중에 인증 기능을 구현한 뒤에 `userid`를 추출 및 계좌 저장 시 적용 필요
-
+        // userId 추출 및 상태 검증
+        Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        userValidator.userStatusIsActive(userId);
 
         // 입력 받은 계좌 정보
         String bankName = request.getBankName();
@@ -103,7 +111,7 @@ public class AccountService {
 
         // 계좌 추가
         return accountRepository.save(AccountEntity.builder()
-                .userId(1L)
+                .userId(userId)
                 .accountNumber(accountNumber)
                 .bankName(bankName)
                 .accountAlias(accountAlias)
@@ -114,14 +122,14 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountEntity deleteExternalAccount(String accountNumber) {
+    public AccountEntity deleteExternalAccount(Authentication auth, String accountNumber) {
 
         // 계좌 유효성 검증 - 계좌 존재 여부 외 다른 부분은 검증할 필요 없음
-        accountValidator.validateAccountNumber(accountNumber);
+        accountValidator.validateAccountNumberFormat(accountNumber);
         AccountEntity account = accountValidator.validateAccountExists(accountNumber);
 
-        // TODO: 인증 기능을 통해 계좌 소유주인지 확인할 필요 있음
-
+        // 계좌 소유주 검증
+        validateAccountAndUserIdMatch(auth, account);
 
         // 계좌 삭제 처리
         account.setAccountStatus(AccountStatus.DELETED);
@@ -130,10 +138,15 @@ public class AccountService {
         return account;
     }
 
-    public List<AccountEntity> showAccountList(Long userId) {
+    public List<AccountEntity> showAccountList(Authentication auth, Long userId) {
 
-        // TODO: 인증 작업 필요
+        // userId 추출
+        Long authUserId = userValidator.findUserByAuthAndGetUserId(auth);
 
+        // 요청된 userId와 추출한 userId 일치 여부 검증
+        if (!Objects.equals(authUserId, userId)) {
+            throw new IllegalArgumentException("Wrong user id");
+        }
 
         return accountRepository.findByUserIdAndAccountStatusIn(
                 userId,
@@ -143,5 +156,12 @@ public class AccountService {
                         AccountStatus.SUSPENDED,
                         AccountStatus.INACTIVE)
         );
+    }
+
+    // 계좌 소유주 검증
+    private void validateAccountAndUserIdMatch(Authentication auth, AccountEntity account) {
+        Long userId = userValidator.findUserByAuthAndGetUserId(auth);
+        accountValidator.validateAccountUserId(account, userId);
+        userValidator.userStatusIsActive(userId);
     }
 }

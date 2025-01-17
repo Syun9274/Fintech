@@ -26,7 +26,8 @@ public class AccountResponse {
 
     public record UpdateResponse(
             String beforeAccountNumber,
-            String afterAccountNumber) {
+            String afterAccountNumber
+    ) {
         public static UpdateResponse of(String accountNumber, AccountEntity account) {
             return new UpdateResponse(
                     accountNumber,
@@ -39,7 +40,8 @@ public class AccountResponse {
             String accountNumber,
             String accountAlias,
             AccountStatus accountStatus,
-            LocalDateTime closeTime) {
+            LocalDateTime closeTime
+    ) {
         public static CloseResponse of(AccountEntity account) {
             return new CloseResponse(
                     account.getAccountNumber(),
@@ -54,7 +56,8 @@ public class AccountResponse {
             String bankName,
             String accountAlias,
             String accountNumber,
-            BigDecimal balance) {
+            BigDecimal balance
+    ) {
         public static AddExternalResponse of(AccountEntity account) {
             return new AddExternalResponse(
                     account.getBankName(),
@@ -69,7 +72,8 @@ public class AccountResponse {
             String bankName,
             String accountAlias,
             String accountNumber,
-            AccountStatus accountStatus) {
+            AccountStatus accountStatus
+    ) {
         public static DeleteExternalResponse of(AccountEntity account) {
             return new DeleteExternalResponse(
                     account.getBankName(),
@@ -84,7 +88,8 @@ public class AccountResponse {
             String accountNumber,
             String accountAlias,
             BigDecimal balance,
-            AccountStatus accountStatus) {
+            AccountStatus accountStatus
+    ) {
         public static List<ListResponse> of(List<AccountEntity> accounts) {
             List<ListResponse> responses = new ArrayList<>();
 
