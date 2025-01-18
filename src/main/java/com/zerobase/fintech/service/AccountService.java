@@ -2,12 +2,16 @@ package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.common.enums.AccountStatus;
 import com.zerobase.fintech.common.enums.BankName;
+import com.zerobase.fintech.common.enums.RequestStatus;
+import com.zerobase.fintech.common.enums.RequestType;
 import com.zerobase.fintech.common.util.AccountNumberGenerator;
 import com.zerobase.fintech.common.util.AccountValidator;
 import com.zerobase.fintech.common.util.UserValidator;
 import com.zerobase.fintech.controller.dto.request.AccountRequest;
 import com.zerobase.fintech.entity.AccountEntity;
+import com.zerobase.fintech.entity.AccountRequestEntity;
 import com.zerobase.fintech.repository.AccountRepository;
+import com.zerobase.fintech.repository.AccountRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,14 @@ import java.util.Objects;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AccountRequestRepository accountRequestRepository;
+
     private final AccountNumberGenerator accountNumberGenerator;
     private final AccountValidator accountValidator;
     private final UserValidator userValidator;
 
     @Transactional
-    public AccountEntity createAccount(Authentication auth, AccountRequest.CreateRequest request) {
+    public AccountEntity makeCreateAccountRequest(Authentication auth, AccountRequest.CreateRequest request) {
 
         // userId 추출 및 상태 검증
         Long userId = userValidator.findUserByAuthAndGetUserId(auth);
@@ -41,20 +47,23 @@ public class AccountService {
         // 계좌 번호 생성
         String accountNumber = accountNumberGenerator.generateAccountNumber();
 
+        // 요청 생성
+        makeAccountRequest(userId, null, RequestType.ACCOUNT_CREATION);
+
         // 계좌 번호를 비롯한 정보를 AccountEntity 저장
         return accountRepository.save(AccountEntity.builder()
-                .userId(userId) // 인증 기능 구현 전까지 '1'로 고정 (기능 구현 후 수정 예정)
+                .userId(userId)
                 .accountNumber(accountNumber)
                 .bankName(BankName.ZB_Bank.getName())
                 .accountAlias(accountAlias)
                 .balance(BigDecimal.valueOf(0))
-                .accountStatus(AccountStatus.ACTIVE)
+                .accountStatus(AccountStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build());
     }
 
     @Transactional
-    public AccountEntity updateAccount(Authentication auth, String accountNumber, AccountRequest.UpdateRequest request) {
+    public void makeUpdateAccountRequest(Authentication auth, String accountNumber, AccountRequest.UpdateRequest request) {
 
         // 계좌 유효성 검증
         accountValidator.validateAccountNumberFormat(accountNumber);
@@ -63,21 +72,17 @@ public class AccountService {
         accountValidator.validateAccountIsClosed(account);
 
         // 계좌 소유주 검증
-        validateAccountAndUserIdMatch(auth, account);
+        Long userId = validateAccountAndUserIdMatch(auth, account);
 
-        // 새로운 계좌 번호 생성
-        String newAccountNumber = accountNumberGenerator.generateAccountNumber();
+        // 요청 생성
+        makeAccountRequest(userId, account.getId(), RequestType.ACCOUNT_RENEWAL);
 
-        // 변경 사항 적용
-        account.setAccountNumber(newAccountNumber);
-        account.setAccountAlias(request.getAccountAlias());
-        account.setUpdatedAt(LocalDateTime.now());
-
-        return account;
+        // 계좌 임시 비활성화 및 요청 승인 대기 (PENDING)
+        account.setAccountStatus(AccountStatus.PENDING);
     }
 
     @Transactional
-    public AccountEntity closeAccount(Authentication auth, String accountNumber) {
+    public AccountEntity makeCloseAccountRequest(Authentication auth, String accountNumber) {
 
         // 계좌 유효성 검증
         accountValidator.validateAccountNumberFormat(accountNumber);
@@ -87,11 +92,13 @@ public class AccountService {
         accountValidator.validateBalanceIsZero(account);
 
         // 계좌 소유주 검증
-        validateAccountAndUserIdMatch(auth, account);
+        Long userId = validateAccountAndUserIdMatch(auth, account);
 
-        // 계좌 해지 처리
-        account.setAccountStatus(AccountStatus.CLOSED);
-        account.setClosedAt(LocalDateTime.now());
+        // 요청 생성
+        makeAccountRequest(userId, account.getId(), RequestType.ACCOUNT_CLOSURE);
+
+        // 계좌 임시 비활성화 및 요청 승인 대기 (PENDING)
+        account.setAccountStatus(AccountStatus.PENDING);
 
         return account;
     }
@@ -159,9 +166,57 @@ public class AccountService {
     }
 
     // 계좌 소유주 검증
-    private void validateAccountAndUserIdMatch(Authentication auth, AccountEntity account) {
+    private Long validateAccountAndUserIdMatch(Authentication auth, AccountEntity account) {
         Long userId = userValidator.findUserByAuthAndGetUserId(auth);
         accountValidator.validateAccountUserId(account, userId);
         userValidator.userStatusIsActive(userId);
+
+        return userId;
+    }
+
+    // 관리자 요청 생성
+    @Transactional
+    public void makeAccountRequest(Long userId, Long accountId, RequestType requestType) {
+        accountRequestRepository.save(AccountRequestEntity.builder()
+                .userId(userId)
+                .accountId(accountId)
+                .requestType(requestType)
+                .requestStatus(RequestStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .build());
+    }
+
+    // 계좌 개설 승인 사항 적용
+    @Transactional
+    public void createAccount(AccountEntity account) {
+
+        // 계좌 활성화
+        account.setAccountStatus(AccountStatus.ACTIVE);
+    }
+
+    // 계좌 재발급 사항 적용
+    @Transactional
+    public void updateAccount(AccountEntity account, String accountAlias) {
+
+        // 별칭 수정 사항이 없는 경우 기존의 별칭 유지
+        if (accountAlias == null) {
+            accountAlias = account.getAccountAlias();
+        }
+
+        String newAccountNumber = accountNumberGenerator.generateAccountNumber();
+
+        // 변경 사항 적용
+        account.setAccountNumber(newAccountNumber);
+        account.setAccountAlias(accountAlias);
+        account.setUpdatedAt(LocalDateTime.now());
+    }
+
+    // 계좌 해지 적용
+    @Transactional
+    public void closeAccount(AccountEntity account) {
+
+        // 계좌 해지 처리
+        account.setAccountStatus(AccountStatus.CLOSED);
+        account.setClosedAt(LocalDateTime.now());
     }
 }

@@ -1,43 +1,57 @@
 package com.zerobase.fintech.controller;
 
+import com.zerobase.fintech.controller.dto.request.AdminRequest;
 import com.zerobase.fintech.controller.dto.response.AdminResponse;
-import com.zerobase.fintech.entity.AdminRequestEntity;
+import com.zerobase.fintech.entity.AccountRequestEntity;
 import com.zerobase.fintech.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("hasAnyRole('ADMIN')")
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/request")
 @RestController
 public class AdminController {
 
     private final AdminService adminService;
 
-    @PostMapping("request-list")
+    @GetMapping("/list")
     public Slice<AdminResponse.RequestListResponse> requestList(
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Slice<AdminRequestEntity> requestList = adminService.showRequestList(pageable);
+        Slice<AccountRequestEntity> requestList = adminService.showRequestList(pageable);
 
         return AdminResponse.RequestListResponse.of(requestList);
     }
 
-    @PostMapping("request-list/all")
+    @GetMapping("/list/all")
     public Slice<AdminResponse.RequestListResponse> allRequestList(
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Slice<AdminRequestEntity> requestList = adminService.showAllRequestList(pageable);
+        Slice<AccountRequestEntity> requestList = adminService.showAllRequestList(pageable);
 
         return AdminResponse.RequestListResponse.of(requestList);
     }
 
     // TODO: 요청 승인 & 거절 기능
+    @PostMapping("/{requestId}/approve")
+    public void approve(
+            @PathVariable Long requestId
+    ) {
+
+    }
+
+    @PostMapping("/{requestId}/reject")
+    public void reject(
+            @PathVariable Long requestId,
+            @Valid @RequestBody AdminRequest.RejectRequest request
+    ) {
+
+    }
 
 }

@@ -25,7 +25,7 @@ public class AccountController {
             @RequestBody AccountRequest.CreateRequest request,
             Authentication auth
     ) {
-        AccountEntity account = accountService.createAccount(auth, request);
+        AccountEntity account = accountService.makeCreateAccountRequest(auth, request);
 
         return AccountResponse.CreateResponse.of(account);
     }
@@ -36,9 +36,9 @@ public class AccountController {
             @RequestBody AccountRequest.UpdateRequest request,
             Authentication auth
     ) {
-        AccountEntity account = accountService.updateAccount(auth, accountNumber, request);
+        accountService.makeUpdateAccountRequest(auth, accountNumber, request);
 
-        return AccountResponse.UpdateResponse.of(accountNumber, account);
+        return AccountResponse.UpdateResponse.of(accountNumber);
     }
 
     @DeleteMapping("/{accountNumber}")
@@ -46,7 +46,7 @@ public class AccountController {
             @PathVariable String accountNumber,
             Authentication auth
     ) {
-        AccountEntity account = accountService.closeAccount(auth, accountNumber);
+        AccountEntity account = accountService.makeCloseAccountRequest(auth, accountNumber);
 
         return AccountResponse.CloseResponse.of(account);
     }

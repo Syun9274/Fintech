@@ -12,41 +12,37 @@ public class AccountResponse {
 
     public record CreateResponse(
             String bankName,
-            String accountAlias,
-            String accountNumber
+            String accountAlias
     ) {
         public static CreateResponse of(AccountEntity account) {
             return new CreateResponse(
                     account.getBankName(),
-                    account.getAccountAlias(),
-                    account.getAccountNumber()
+                    account.getAccountAlias()
             );
         }
     }
 
     public record UpdateResponse(
-            String beforeAccountNumber,
-            String afterAccountNumber
+            String accountNumber
     ) {
-        public static UpdateResponse of(String accountNumber, AccountEntity account) {
+        public static UpdateResponse of(String accountNumber) {
             return new UpdateResponse(
-                    accountNumber,
-                    account.getAccountNumber()
+                    accountNumber
             );
         }
     }
 
     public record CloseResponse(
+            String bankName,
             String accountNumber,
             String accountAlias,
-            AccountStatus accountStatus,
             LocalDateTime closeTime
     ) {
         public static CloseResponse of(AccountEntity account) {
             return new CloseResponse(
+                    account.getBankName(),
                     account.getAccountNumber(),
                     account.getAccountAlias(),
-                    account.getAccountStatus(),
                     account.getClosedAt()
             );
         }

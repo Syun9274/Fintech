@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "adminRequest")
+@Table(name = "accountRequest")
 @Entity
-public class AdminRequestEntity {
+public class AccountRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +27,6 @@ public class AdminRequestEntity {
     @Column(nullable = false)
     private Long userId;
 
-    @NotNull
-    @Column(nullable = false)
     private Long accountId;
 
     @Enumerated(EnumType.STRING)

@@ -23,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
-@Table(name = "users", uniqueConstraints = {
+@Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
         @UniqueConstraint(columnNames = "phoneNumber")
 })
@@ -43,8 +43,6 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @NotNull
-    @Column(nullable = false)
     private String nickname;
 
     @NotNull
