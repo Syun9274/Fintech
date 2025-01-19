@@ -39,7 +39,7 @@ public class AdminController {
         return AdminResponse.RequestListResponse.of(requestList);
     }
 
-    // TODO: 요청 승인 & 거절 기능
+    // 요청 승인 & 거절 기능
     @PostMapping("/{requestId}/approve")
     public ResponseEntity<?> approve(
             @PathVariable Long requestId
