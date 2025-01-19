@@ -47,11 +47,8 @@ public class AccountService {
         // 계좌 번호 생성
         String accountNumber = accountNumberGenerator.generateAccountNumber();
 
-        // 요청 생성
-        makeAccountRequest(userId, null, RequestType.ACCOUNT_CREATION);
-
         // 계좌 번호를 비롯한 정보를 AccountEntity 저장
-        return accountRepository.save(AccountEntity.builder()
+        AccountEntity account = accountRepository.save(AccountEntity.builder()
                 .userId(userId)
                 .accountNumber(accountNumber)
                 .bankName(BankName.ZB_Bank.getName())
@@ -60,6 +57,11 @@ public class AccountService {
                 .accountStatus(AccountStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build());
+
+        // 요청 생성
+        makeAccountRequest(userId, account.getId(), RequestType.ACCOUNT_CREATION);
+
+        return account;
     }
 
     @Transactional
@@ -75,6 +77,7 @@ public class AccountService {
         Long userId = validateAccountAndUserIdMatch(auth, account);
 
         // 요청 생성
+        account.setAccountAlias(request.getAccountAlias());
         makeAccountRequest(userId, account.getId(), RequestType.ACCOUNT_RENEWAL);
 
         // 계좌 임시 비활성화 및 요청 승인 대기 (PENDING)
@@ -196,18 +199,12 @@ public class AccountService {
 
     // 계좌 재발급 사항 적용
     @Transactional
-    public void updateAccount(AccountEntity account, String accountAlias) {
-
-        // 별칭 수정 사항이 없는 경우 기존의 별칭 유지
-        if (accountAlias == null) {
-            accountAlias = account.getAccountAlias();
-        }
+    public void updateAccount(AccountEntity account) {
 
         String newAccountNumber = accountNumberGenerator.generateAccountNumber();
 
         // 변경 사항 적용
         account.setAccountNumber(newAccountNumber);
-        account.setAccountAlias(accountAlias);
         account.setUpdatedAt(LocalDateTime.now());
     }
 

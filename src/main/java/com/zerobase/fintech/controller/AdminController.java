@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,18 +41,21 @@ public class AdminController {
 
     // TODO: 요청 승인 & 거절 기능
     @PostMapping("/{requestId}/approve")
-    public void approve(
+    public ResponseEntity<?> approve(
             @PathVariable Long requestId
     ) {
+        adminService.approveRequest(requestId);
 
+        return ResponseEntity.ok("Approved Done");
     }
 
     @PostMapping("/{requestId}/reject")
-    public void reject(
+    public ResponseEntity<?> reject(
             @PathVariable Long requestId,
             @Valid @RequestBody AdminRequest.RejectRequest request
     ) {
+        adminService.rejectRequest(requestId, request);
 
+        return ResponseEntity.ok("Rejected Done");
     }
-
 }
