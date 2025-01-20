@@ -1,0 +1,45 @@
+### 회원 가입
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "nickname": "",
+  "phoneNumber": "01012341234",
+  "email": "abcde@gmail.com",
+  "password": "Abcde1234!"
+}
+
+### 로그인
+POST http://localhost:8080/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "abcde@gmail.com",
+  "password": "Abcde1234!"
+}
+
+### 탈퇴
+DELETE http://localhost:8080/auth/deactivate
+Authorization: Bearer
+
+
+
+### 관리자 계정 생성
+POST http://localhost:8080/auth/YWRtaW4K
+Content-Type: application/json
+
+{
+  "nickname": "ADMIN",
+  "phoneNumber": "01000000000",
+  "email": "admin@gmail.com",
+  "password": "Admin1234!"
+}
+
+### 관리자 계정 로그인
+POST http://localhost:8080/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "Admin1234!"
+}

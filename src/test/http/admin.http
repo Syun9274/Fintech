@@ -1,0 +1,20 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+### 승인 대기 목록
+GET http://localhost:8080/request/list
+Authorization: Bearer
+
+### 요청 승인
+POST http://localhost:8080/request/{requestId}/approve
+Authorization: Bearer
+
+### 요청 거부
+POST http://localhost:8080/request/{requestId}/reject
+Content-Type: application/json
+Authorization: Bearer
+
+{
+  "reason": "Enter reject reason here"
+}
