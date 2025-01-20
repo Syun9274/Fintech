@@ -57,7 +57,7 @@ public class UserValidator {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (user.getStatus() == UserStatus.DEACTIVATED) {
+        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new IllegalArgumentException("User is not active");
         }
     }
