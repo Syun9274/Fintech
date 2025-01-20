@@ -9,21 +9,18 @@ public enum RequestType {
         @Override
         public void process(AccountEntity account, AccountService accountService) {
             accountService.createAccount(account);
-            account.setAccountStatus(AccountStatus.ACTIVE);
         }
     },
     ACCOUNT_RENEWAL {
         @Override
         public void process(AccountEntity account, AccountService accountService) {
             accountService.updateAccount(account);
-            account.setAccountStatus(AccountStatus.ACTIVE);
         }
     },
     ACCOUNT_CLOSURE {
         @Override
         public void process(AccountEntity account, AccountService accountService) {
             accountService.closeAccount(account);
-            account.setAccountStatus(AccountStatus.CLOSED);
         }
     };
 
